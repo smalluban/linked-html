@@ -1,0 +1,37 @@
+{
+  "name": "linked-html",
+  "version": "0.1.0",
+  "description": "A multi-purpose HTML & data linking library",
+  "main": "dist/linked-html.js",
+  "scripts": {
+    "test": "./node_modules/karma/bin/karma start --single-run --browsers Firefox",
+    "develop": "./node_modules/karma/bin/karma start",
+    "build": "webpack",
+    "prebuild": "npm test",
+    "prepublish": "npm run build"
+  },
+  "author": "Dominik Lubański <dominik.lubanski@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/smalluban/linked-html/issues"
+  },
+  "homepage": "https://github.com/smalluban/linked-html",
+  "dependencies": {
+    "core-js": "^1.0.1",
+    "papillon": "^1.4.0"
+  },
+  "devDependencies": {
+    "babel-core": "^5.8.22",
+    "babel-loader": "^5.3.2",
+    "html-loader": "^0.3.0",
+    "jasmine-core": "^2.3.4",
+    "karma": "^0.13.3",
+    "karma-chrome-launcher": "^0.2.0",
+    "karma-firefox-launcher": "^0.1.6",
+    "karma-ievms": "^0.1.0",
+    "karma-jasmine": "^0.3.6",
+    "karma-safari-launcher": "^0.1.1",
+    "karma-webpack": "^1.7.0",
+    "webpack": "^1.11.0"
+  }
+}
