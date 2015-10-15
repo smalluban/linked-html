@@ -23,7 +23,7 @@ class Property extends List {
           return val ? val : undefined;
         },
         set: (value)=> {
-          if (value === false) {
+          if (value === false || value === undefined || value === null) {
             node.removeAttribute(name);
           } else {
             node.setAttribute(name, value === true ? name : value);
