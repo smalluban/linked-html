@@ -19,9 +19,8 @@ const Markers = {
 };
 
 const Filters = {
-  string: { set: String },
-  int: { set: v => parseInt(v, 10) },
-  bool: { set: Boolean }
+  int: { set: v => parseInt(v, 10), get: String },
+  bool: { set: Boolean, get: String }
 };
 
 class Engine {
