@@ -62,7 +62,7 @@ class Engine {
     this._exprs.forEach(expr => expr.value);
   }
 
-  link(evaluate, {value, observe} = {}) {
+  _link(evaluate, {value, observe} = {}) {
     const expr = new Expression(evaluate, {
       engine: this, filters: this._filters
     });

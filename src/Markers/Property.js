@@ -4,7 +4,7 @@ class Property extends List {
   link(node, name, value) {
     const accessor = this.resolveProperty(node, name);
 
-    this.engine.link(value, {
+    this.engine._link(value, {
       value: accessor.get(),
       observe: accessor.set
     });

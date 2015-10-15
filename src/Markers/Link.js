@@ -80,7 +80,7 @@ class Link {
         wrapper = new Wrapper(node);
     }
 
-    const expr = engine.link(evaluate, {
+    const expr = engine._link(evaluate, {
       value: wrapper.get(),
       observe: wrapper.set.bind(wrapper)
     });

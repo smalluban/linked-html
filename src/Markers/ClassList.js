@@ -10,7 +10,7 @@ class ClassList extends List {
       }
     };
 
-    this.engine.link(evaluate, {
+    this.engine._link(evaluate, {
       value: node.classList.contains(className),
       observe: cb
     });

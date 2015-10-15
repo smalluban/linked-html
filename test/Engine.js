@@ -1,6 +1,6 @@
 import Engine from '../src/Engine';
 
-describe('Engine link method', ()=> {
+describe('Engine _link method', ()=> {
 
   describe('use custom filter', ()=> {
     let engine, filter;
@@ -16,14 +16,14 @@ describe('Engine link method', ()=> {
     });
 
     it('- set method', ()=> {
-      const expr = engine.link('test|filter');
+      const expr = engine._link('test|filter');
       expr.value = 'new value';
       expect(filter.set).toHaveBeenCalled();
       expect(filter.get).not.toHaveBeenCalled();
     });
 
     it('- get method', ()=> {
-      const expr = engine.link('test|filter');
+      const expr = engine._link('test|filter');
       expr.value;
       expect(filter.get).toHaveBeenCalled();
       expect(filter.set).not.toHaveBeenCalled();

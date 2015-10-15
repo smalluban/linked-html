@@ -9,7 +9,7 @@ class Foreach {
     this.engine = engine;
     this.node = node;
 
-    const expr = engine.link(evaluate);
+    const expr = engine._link(evaluate);
     let list = expr.value;
     let createFromView = false;
 

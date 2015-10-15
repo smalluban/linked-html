@@ -8,7 +8,7 @@ class Context {
 
     const template = new Template(Array.from(node.childNodes), engine);
 
-    engine.link(evaluate, {
+    engine._link(evaluate, {
       value: {},
       observe: state => {
         if (!state) {
