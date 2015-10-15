@@ -29,6 +29,16 @@ describe('Link', ()=> {
         done();
       });
     });
+
+    it('push value to state', ()=> {
+      new Link(engine, node, 'test');
+      node.value = 'new value';
+      const event = document.createEvent('Event');
+      event.initEvent('input', true, false);
+      node.dispatchEvent(event);
+
+      expect(engine.state.test).toEqual('new value');
+    });
   });
 
   describe('textarea', ()=> {
@@ -51,9 +61,19 @@ describe('Link', ()=> {
         done();
       });
     });
+
+    it('push value to state', ()=> {
+      new Link(engine, node, 'test');
+      node.value = 'new value';
+      const event = document.createEvent('Event');
+      event.initEvent('input', true, false);
+      node.dispatchEvent(event);
+
+      expect(engine.state.test).toEqual('new value');
+    });
   });
 
-  describe('radio and checkbox input', ()=> {
+  describe('radio input', ()=> {
     let node;
 
     beforeEach(()=> {
@@ -97,6 +117,27 @@ describe('Link', ()=> {
 
       expect(engine.state.test).toEqual('two');
     });
+
+    it('push value to state', ()=> {
+      document.body.appendChild(node);
+
+      node.children[0].checked = true;
+      new Link(engine, node.children[0], 'test');
+      new Link(engine, node.children[1], 'test');
+
+      node.children[1].checked = true;
+
+      const event = document.createEvent('Event');
+      event.initEvent('change', true, false);
+
+      node.children[0].dispatchEvent(event);
+      node.children[1].dispatchEvent(event);
+
+      expect(engine.state.test).toEqual('two');
+
+      node.remove();
+    });
+
   });
 
 });

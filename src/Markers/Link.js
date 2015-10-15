@@ -52,14 +52,8 @@ class MultiSelectWrapper extends SelectWrapper {
       throw new Error('Invalid values. Array instance required.');
     }
 
-    const options = Array.from(this.node.options);
-
-    values.forEach(v => {
-      const [node] = options.filter(o => o.value === v);
-      if (!node) {
-        throw new Error(`No option found with '${v}' value.`);
-      }
-      node.selected = true;
+    Array.from(this.node.options).forEach(o => {
+      o.selected = values.some(v => v === o.value);
     });
   }
 }
@@ -73,7 +67,6 @@ class Link {
       case "radio":
         wrapper = new CheckWrapper(node);
         break;
-
 
       case "select-one":
         wrapper = new SelectWrapper(node);
@@ -89,12 +82,12 @@ class Link {
 
     const expr = engine.link(evaluate, {
       value: wrapper.get(),
-      observe: value => wrapper.set(value)
+      observe: wrapper.set.bind(wrapper)
     });
 
     wrapper.observe(()=> {
       engine.root.setState(()=> {
-        expr.value = wrapper.value;
+        expr.value = wrapper.get();
       });
     });
   }
