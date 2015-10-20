@@ -2,4 +2,5 @@
 import 'core-js/modules/es6.object.assign';
 import 'core-js/modules/es6.array.from';
 
-export { default as default } from './src/Engine';
+// Re-exports
+export { default as Engine } from './src/Engine';
