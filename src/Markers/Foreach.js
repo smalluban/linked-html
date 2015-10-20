@@ -24,12 +24,12 @@ class Foreach {
 
     if (createFromView) {
       this.items = this.createFromView(list);
-      this.template = this.items[0].clone();
+      this.template = this.items[this.items.length -1].clone();
     } else {
       this.items = this.createFromList(list);
 
-      if (this.items[0]) {
-        this.template = this.items[0].clone();
+      if (this.items.length) {
+        this.template = this.items[this.items.length - 1].clone();
       } else {
         this.template = new IndexedTemplate(node.children[0], this.engine);
       }
