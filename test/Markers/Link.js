@@ -74,8 +74,6 @@ describe('Link', ()=> {
   });
 
   describe('radio input', ()=> {
-    let node;
-
     beforeEach(()=> {
       node = document.createElement('div');
       node.innerHTML = `
@@ -139,5 +137,56 @@ describe('Link', ()=> {
     });
 
   });
+
+  describe('select', ()=> {
+    beforeEach(()=> {
+      node = document.createElement('div');
+      node.innerHTML = `
+        <select>
+          <option>1</option>
+          <option>2</option>
+        </select>
+      `;
+      node = node.children[0];
+      node.options[0].selected = true;
+    });
+
+    it('set value from view', ()=> {
+      new Link(engine, node, 'test');
+      expect(engine.state.test).toEqual('1');
+    });
+
+    it('get value from state', ()=> {
+      engine.state.test = '2';
+      new Link(engine, node, 'test');
+      expect(node.value).toEqual('2');
+    });
+
+    it('push value to state', ()=> {
+      new Link(engine, node, 'test');
+
+      node.value = '2';
+      const event = document.createEvent('Event');
+      event.initEvent('change', true, false);
+      node.dispatchEvent(event);
+
+      expect(engine.state.test).toEqual('2');
+    });
+
+    it('refresh select value after options mutation', (done)=> {
+      new Link(engine, node, 'test');
+
+      node.options[0].value = '2';
+      node.options[1].value = '1';
+
+      window.requestAnimationFrame(()=> {
+        expect(node.value).toEqual('1');
+        done();
+      });
+
+    });
+  });
+
+
 
 });

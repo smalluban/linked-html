@@ -127,9 +127,11 @@ class Engine {
       _exprs: { value: new Set() }
     });
 
-    Object.assign(child, properties);
+    if (properties) {
+      Object.assign(child, properties);
+    }
 
-    [].concat(nodes).forEach(n => child._compile(n));
+    nodes.forEach(n => child._compile(n));
 
     return child;
   }

@@ -6,7 +6,11 @@ class Context {
       throw new Error('No children elements.');
     }
 
-    const template = new Template(Array.from(node.childNodes), engine);
+    const template = new Template(
+      Array.from(node.childNodes)
+        .filter(n => n.nodeType === Node.ELEMENT_NODE),
+      engine
+    );
 
     engine._link(evaluate, {
       value: {},

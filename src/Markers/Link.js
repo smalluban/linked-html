@@ -8,6 +8,8 @@ class Wrapper {
   }
 
   set(value) {
+    this.value = value;
+
     if (this.node.value !== value) {
       this.node.value = value;
     }
@@ -37,6 +39,18 @@ class CheckWrapper extends Wrapper {
 }
 
 class SelectWrapper extends Wrapper {
+  constructor(node) {
+    super(node);
+
+    new MutationObserver(()=> this.set(this.value)).observe(node, {
+      attributes: true,
+      childList: true,
+      characterData: true,
+      subtree: true,
+      attributeFilter: ['value']
+    });
+  }
+
   observe(cb) {
     this.node.addEventListener('change', cb);
   }
@@ -48,6 +62,8 @@ class MultiSelectWrapper extends SelectWrapper {
   }
 
   set(values) {
+    this.value = values;
+
     if (!Array.isArray(values)) {
       throw new Error('Invalid values. Array instance required.');
     }

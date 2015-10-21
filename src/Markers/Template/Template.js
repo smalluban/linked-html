@@ -15,10 +15,7 @@ class Template {
 
   setState(state) {
     if (!this.engine) {
-      this.engine = this.parentEngine._spawn(
-        this.nodes.filter(n => n.nodeType === Node.ELEMENT_NODE),
-        state
-      );
+      this.engine = this.parentEngine._spawn(this.nodes, state);
     } else {
       this.engine.setState(function() {
         this.state = state;
@@ -58,11 +55,11 @@ class Template {
   }
 
   clone() {
-    const nodes = this.nodes.map(
-      node => document.importNode(node, true)
+    return new this.constructor(
+      this.nodes.map(node => node.cloneNode(true)),
+      this.parentEngine,
+      this.host
     );
-
-    return new this.constructor(nodes, this.parentEngine, this.host);
   }
 }
 
