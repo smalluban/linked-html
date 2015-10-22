@@ -6,12 +6,28 @@ const EXPR_MATCH = new RegExp(
   '^([\\' + Object.keys(Flags).join('\\') + ']*)([^|]+)(\\|([^|]+))?$');
 
 class Expression {
+  static parse(evaluate) {
+    const [temp, filter] = evaluate.split('|');
+    const flags = new Set();
+
+    for(var index = 0; index < temp.length; index++) {
+      if (Flags[temp[index]]) {
+        flags.add(temp[index]);
+      } else {
+        break;
+      }
+    }
+
+    const expr = temp.substr(index);
+    return [flags, expr, filter];
+  }
+
   constructor(evaluate, { engine, filters } = {}) {
     if(!evaluate || typeof evaluate !== 'string') {
       throw new TypeError(`'${evaluate}': Invalid input type.`);
     }
 
-    const [,flags, expr,, filter] = evaluate.match(EXPR_MATCH);
+    const [flags, expr, filter] = Expression.parse(evaluate.trim());
 
     this.filter = { get: v => v, set: v => v };
 
@@ -31,15 +47,7 @@ class Expression {
       return engine.state;
     };
 
-    Array.from(flags)
-      .reduce((set, f)=> {
-        if (!Flags[f]) {
-          throw new TypeError(`'${f}': Invalid flag.`);
-        }
-        set.add(f);
-        return set;
-      }, new Set())
-      .forEach(f => Flags[f](this, engine));
+    flags.forEach(f => Flags[f](this, engine));
 
     this.path = new Path(this.evaluate, this.context);
   }

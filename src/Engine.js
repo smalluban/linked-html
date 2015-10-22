@@ -48,6 +48,8 @@ class Engine {
       default:
         throw new TypeError('Element or DocumentFragment required.');
     }
+
+    this.setState();
   }
 
   setState(fnOrProps) {
@@ -80,7 +82,7 @@ class Engine {
     return expr;
   }
 
-  _compile(node, refresh = true) {
+  _compile(node) {
     const prefixLength = this._prefix.length;
     const compileChilds = Array.from(node.attributes)
       .filter(a => a.name.substr(0, prefixLength) === this._prefix)
@@ -109,12 +111,7 @@ class Engine {
       }, true);
 
     if (compileChilds && node.children.length) {
-      Array.from(node.children)
-        .forEach(child => this._compile(child, false));
-    }
-
-    if (refresh) {
-      this.setState();
+      Array.from(node.children).forEach(child => this._compile(child));
     }
   }
 
@@ -132,6 +129,7 @@ class Engine {
     }
 
     nodes.forEach(n => child._compile(n));
+    child.setState();
 
     return child;
   }
