@@ -18,6 +18,9 @@ module.exports = function(config) {
       },
       devtool: "#inline-source-map"
     },
+    webpackMiddleware: {
+      noInfo: true
+    },
     reporters: ['progress'],
     port: 9876,
     colors: true,
