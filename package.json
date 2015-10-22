@@ -15,6 +15,11 @@
   "bugs": {
     "url": "https://github.com/smalluban/linked-html/issues"
   },
+  "keywords": [
+    "rendering",
+    "data binding",
+    "parsing"
+  ],
   "homepage": "https://github.com/smalluban/linked-html",
   "dependencies": {
     "core-js": "^1.0.1",

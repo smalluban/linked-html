@@ -1,0 +1,25 @@
+{
+  "name": "linked-html",
+  "version": "0.1.0",
+  "homepage": "https://github.com/smalluban/linked-html",
+  "authors": [
+    "Dominik Lubański <dominik.lubanski@gmail.com>"
+  ],
+  "description": "A multi-purpose HTML & data linking library",
+  "main": "dist/linked-html.js",
+  "moduleType": [
+    "amd",
+    "es6",
+    "globals"
+  ],
+  "keywords": [
+    "rendering",
+    "data binding",
+    "parsing"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "node_modules",
+    "test"
+  ]
+}
