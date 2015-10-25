@@ -42,12 +42,25 @@ class SelectWrapper extends Wrapper {
   constructor(node) {
     super(node);
 
-    new MutationObserver(()=> this.set(this.value)).observe(node, {
+    new MutationObserver(()=> {
+      debugger;
+      this.set(this.value);
+    }).observe(node, {
       attributes: true,
       childList: true,
       characterData: true,
-      subtree: true,
-      attributeFilter: ['value']
+      subtree: true
+    });
+  }
+
+  set(value) {
+    this.value = value;
+
+    Array.from(this.node.options).some(o => {
+      if (o.value === value) {
+        o.selected = true;
+        return true;
+      }
     });
   }
 
@@ -58,7 +71,14 @@ class SelectWrapper extends Wrapper {
 
 class MultiSelectWrapper extends SelectWrapper {
   get() {
-    return Array.from(this.node.selectedOptions).map(o => o.value);
+    debugger;
+    const values = this.value || [];
+    const newValues = Array.from(this.node.selectedOptions).map(o => o.value);
+
+    Object.assign(values, newValues);
+    values.length = newValues.length;
+
+    return values;
   }
 
   set(values) {

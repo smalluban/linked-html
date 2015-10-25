@@ -165,12 +165,83 @@ describe('Link', ()=> {
     it('push value to state', ()=> {
       new Link(engine, node, 'test');
 
-      node.value = '2';
+      node.options[1].selected = true;
       const event = document.createEvent('Event');
       event.initEvent('change', true, false);
+
       node.dispatchEvent(event);
 
       expect(engine.state.test).toEqual('2');
+    });
+
+    it('refresh select value after options mutation', (done)=> {
+      new Link(engine, node, 'test');
+
+      node.options[0].value = '2';
+      node.options[1].value = '1';
+
+      window.requestAnimationFrame(()=> {
+        expect(node.value).toEqual('1');
+        done();
+      });
+
+    });
+  });
+
+  describe('select with multiple option', ()=> {
+    beforeEach(()=> {
+      node = document.createElement('div');
+      node.innerHTML = `
+        <select multiple>
+          <option>1</option>
+          <option>2</option>
+          <option>3</option>
+          <option>4</option>
+        </select>
+      `;
+      node = node.children[0];
+      node.options[0].selected = true;
+      node.options[2].selected = true;
+    });
+
+    it('set value from view', ()=> {
+      new Link(engine, node, 'test');
+      expect(engine.state.test).toEqual(['1','3']);
+    });
+
+    it('get value from state', ()=> {
+      engine.state.test = ['2','4'];
+      new Link(engine, node, 'test');
+      expect(node.options[1].selected).toEqual(true);
+      expect(node.options[3].selected).toEqual(true);
+    });
+
+    it('push value to state', ()=> {
+      new Link(engine, node, 'test');
+
+      node.options[1].selected = true;
+      const event = document.createEvent('Event');
+      event.initEvent('change', true, false);
+
+      node.dispatchEvent(event);
+
+      expect(engine.state.test).toEqual(['1','2','3']);
+    });
+
+    it('update target object in state', ()=> {
+      new Link(engine, node, 'test');
+
+      debugger;
+
+      const target = engine.state.test;
+
+      node.options[1].selected = true;
+      const event = document.createEvent('Event');
+      event.initEvent('change', true, false);
+
+      node.dispatchEvent(event);
+
+      expect(engine.state.test === target).toEqual(true);
     });
 
     it('refresh select value after options mutation', (done)=> {
