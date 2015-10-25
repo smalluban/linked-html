@@ -4,7 +4,7 @@ describe('Expression', ()=> {
   let expr, engine;
 
   beforeEach(()=> {
-    engine = { state: {} };
+    engine = { state: {}, _live: true };
   });
 
   describe('value', ()=> {

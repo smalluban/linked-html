@@ -24,7 +24,7 @@ const Filters = {
 };
 
 class Engine {
-  constructor(node, {state, markers, filters, prefix} = {}) {
+  constructor(node, {state, markers, filters, prefix, live = true} = {}) {
     if (state && Object(state) !== state) {
       throw TypeError(`Invalid 'state' option, object required.`);
     }
@@ -35,6 +35,7 @@ class Engine {
       _markers: { value: Object.assign({}, Markers, markers) },
       _filters: { value: Object.assign({}, Filters, filters) },
       _prefix: { value: (prefix || '-') + '-' },
+      _live: { value: live },
       _exprs: { value: new Set() }
     });
 

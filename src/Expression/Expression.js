@@ -2,9 +2,6 @@ import { Observer } from 'papillon/papillon';
 import Path from './Path';
 import Flags from './Flags';
 
-const EXPR_MATCH = new RegExp(
-  '^([\\' + Object.keys(Flags).join('\\') + ']*)([^|]+)(\\|([^|]+))?$');
-
 class Expression {
   static parse(evaluate) {
     const [temp, filter] = evaluate.split('|');
@@ -27,7 +24,20 @@ class Expression {
       throw new TypeError(`'${evaluate}': Invalid input type.`);
     }
 
+    if (engine.state) {
+      this.context = ()=> engine.state;
+    } else {
+      this.context = ()=> {
+        if (engine.state === undefined) {
+          engine.state = {};
+        }
+        return engine.state;
+      };
+    }
+
     const [flags, expr, filter] = Expression.parse(evaluate.trim());
+
+    this.evaluate = expr;
 
     this.filter = { get: v => v, set: v => v };
 
@@ -38,17 +48,9 @@ class Expression {
       Object.assign(this.filter, filters[filter]);
     }
 
-    this.evaluate = expr;
-
-    this.context = ()=> {
-      if (engine.state === undefined) {
-        engine.state = {};
-      }
-      return engine.state;
-    };
-
     flags.forEach(f => Flags[f](this, engine));
 
+    this.live = engine._live;
     this.path = new Path(this.evaluate, this.context);
   }
 
@@ -71,9 +73,11 @@ class Expression {
   observe(cb, init = false) {
     const tempValue = this.value;
 
-    new Observer(this, 'value', (changelog)=> {
-      cb(this.value, changelog.value);
-    });
+    if (this.live) {
+      new Observer(this, 'value', (changelog)=> {
+        cb(this.value, changelog.value);
+      });
+    }
 
     if (init) {
       cb(tempValue);
