@@ -1,4 +1,4 @@
-import { compile } from '../../Engine';
+import Engine, { compile } from '../../Engine';
 
 export default class Template {
   constructor(nodes, engine, host) {
@@ -16,6 +16,7 @@ export default class Template {
   }
 
   spawn(engine, nodeList, state, properties) {
+    const config = Engine.config(engine);
     const child = Object.create(engine);
 
     Object.defineProperties(child, {
@@ -27,7 +28,10 @@ export default class Template {
       Object.assign(child, properties);
     }
 
-    nodeList.forEach(node => compile(child, node));
+    nodeList.forEach(
+      node => compile(node, child, config.prefix, config.markers)
+    );
+
     child.setState();
 
     return child;

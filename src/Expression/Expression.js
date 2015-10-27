@@ -1,8 +1,7 @@
 import { State } from 'papillon/papillon';
+import Engine from '../Engine';
 import Path from './Path';
 import Flags from './Flags';
-
-const map = new WeakMap();
 
 export default class Expression {
   static parse(evaluate) {
@@ -19,16 +18,6 @@ export default class Expression {
 
     const expr = temp.substr(index);
     return [flags, expr, filter];
-  }
-
-  static getSet(engine) {
-    let set = map.get(engine);
-    if (!set) {
-      set = new Set();
-      map.set(engine, set);
-    }
-
-    return set;
   }
 
   static queue(cb) {
@@ -76,12 +65,9 @@ export default class Expression {
 
     flags.forEach(f => Flags[f](this, engine));
 
-    this.live = engine._live;
     this.path = new Path(expr, this.context);
 
-    if (engine._live) {
-      Expression.getSet(engine).add(this);
-    }
+    Engine.exprs(engine).add(this);
   }
 
   get() {

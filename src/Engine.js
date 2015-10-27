@@ -1,5 +1,3 @@
-import Expression from './Expression/Expression';
-
 import Link from './Markers/Link';
 import ClassList from './Markers/ClassList';
 import Context from './Markers/Context';
@@ -23,27 +21,52 @@ const Filters = {
   bool: { set: Boolean, get: String }
 };
 
+const configMap = new WeakMap();
+const exprsMap = new WeakMap();
+
 export default class Engine {
+  static config(engine) {
+    let config = configMap.get(engine.root);
+    if (!config) {
+      config = {};
+      configMap.set(engine, config);
+    }
+    return config;
+  }
+
+  static exprs(engine) {
+    let exprs = exprsMap.get(engine);
+    if (!exprs) {
+      exprs = new Set();
+      exprsMap.set(engine, exprs);
+    }
+    return exprs;
+  }
+
   constructor(node, {state, markers, filters, prefix, live} = {}) {
     if (state && Object(state) !== state) {
       throw TypeError(`Invalid 'state' option, object required.`);
     }
 
+    const config = Object.defineProperties(Engine.config(this), {
+      markers: { value: Object.assign({}, Markers, markers) },
+      filters: { value: Object.assign({}, Filters, filters) },
+      prefix: { value: (prefix || '-') + '-' },
+      live: { value: live === undefined ? true : live }
+    });
+
     Object.defineProperties(this, {
-      root: { value: this },
-      state: { value: state || {} },
-      _markers: { value: Object.assign({}, Markers, markers) },
-      _filters: { value: Object.assign({}, Filters, filters) },
-      _prefix: { value: (prefix || '-') + '-' },
-      _live: { value: live === undefined ? true : live }
+      root: { value: this }, state: { value: state || {} }
     });
 
     switch(node.nodeType) {
       case Node.ELEMENT_NODE:
-        compile(this, node);
+        compile(node, this, config.prefix, config.markers);
         break;
       case Node.DOCUMENT_FRAGMENT_NODE:
-        Array.from(node.children).forEach(n => compile(this, n));
+        Array.from(node.children).forEach(
+          node => compile(node, this, config.prefix, config.markers)
+        );
         break;
       default:
         throw new TypeError('Element or DocumentFragment required.');
@@ -61,19 +84,19 @@ export default class Engine {
       }
     }
 
-    Expression.getSet(this).forEach(expr => expr.check());
+    Engine.exprs(this).forEach(expr => expr.check());
   }
 }
 
-export function compile(engine, node) {
-  const prefixLength = engine._prefix.length;
+export function compile(node, engine, prefix, markers) {
+  const prefixLength = prefix.length;
   const compileChilds = Array.from(node.attributes)
-    .filter(a => a.name.substr(0, prefixLength) === engine._prefix)
+    .filter(a => a.name.substr(0, prefixLength) === prefix)
     .reduce((acc, attr) => {
       const id = attr.name.substr(prefixLength)
         .replace(/-([a-z])/g, g => g[1].toUpperCase());
 
-      const marker = engine._markers[id];
+      const marker = markers[id];
 
       try {
         if (!marker) {
@@ -94,6 +117,8 @@ export function compile(engine, node) {
     }, true);
 
   if (compileChilds && node.children.length) {
-    Array.from(node.children).forEach(node => compile(engine, node));
+    Array.from(node.children).forEach(
+      node => compile(node, engine, prefix, markers)
+    );
   }
 }
