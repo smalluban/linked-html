@@ -2,7 +2,7 @@ import Engine from '../../src/Engine';
 import Foreach from '../../src/Markers/Foreach';
 
 describe('Foreach', ()=> {
-  let engine, node;
+  let engine, node, foreach;
 
   beforeEach(()=> {
     node = document.createElement('ul');
@@ -14,7 +14,7 @@ describe('Foreach', ()=> {
       <li --text="@state">Title1</li>
       <li --text="@state">Title2</li>
     `;
-    new Foreach(engine, node, 'test');
+    Foreach(engine, node, 'test');
     expect(engine.state.test).toEqual(["Title1", "Title2"]);
   });
 
@@ -24,7 +24,7 @@ describe('Foreach', ()=> {
       <li --text="test">Title2</li>
     `;
 
-    new Foreach(engine, node, 'test');
+    Foreach(engine, node, 'test');
     expect(engine.state.test).toEqual([
       { test: "Title1" },
       { test: "Title2" }
@@ -37,7 +37,7 @@ describe('Foreach', ()=> {
       <li --text="test">Title2</li>
     `;
     engine.setState({ test: [] });
-    new Foreach(engine, node, 'test');
+    Foreach(engine, node, 'test');
 
     expect(node.children.length).toEqual(0);
   });
@@ -51,7 +51,7 @@ describe('Foreach', ()=> {
       test: [undefined, 'two', 'three']
     });
 
-    new Foreach(engine, node, 'test');
+    Foreach(engine, node, 'test');
 
     expect(node.children[0].textContent).toEqual('Title1');
     expect(node.children[1].textContent).toEqual('two');
@@ -67,7 +67,7 @@ describe('Foreach', ()=> {
       test: [undefined, { test: 'two'}, { test: 'three'}]
     });
 
-    new Foreach(engine, node, 'test');
+    Foreach(engine, node, 'test');
 
     expect(node.children[0].textContent).toEqual('Title1');
     expect(node.children[1].textContent).toEqual('two');
@@ -75,15 +75,13 @@ describe('Foreach', ()=> {
   });
 
   describe('when manipulate array', ()=> {
-    let foreach;
-
     beforeEach(()=> {
       node.innerHTML = `
         <li --text="@state">Title2</li>
         <li --text="@state">Title1</li>
         <li --text="@state">Title3</li>
       `;
-      foreach = new Foreach(engine, node, 'test');
+      foreach = Foreach(engine, node, 'test');
     });
 
     it('adds new element', (done)=> {
@@ -185,15 +183,13 @@ describe('Foreach', ()=> {
   });
 
   describe('when set new array', ()=> {
-    let foreach;
-
     beforeEach(()=> {
       node.innerHTML = `
         <li --text="@state">Title2</li>
         <li --text="@state">Title1</li>
         <li --text="@state">Title3</li>
       `;
-      foreach = new Foreach(engine, node, 'test');
+      foreach = Foreach(engine, node, 'test');
     });
 
     it('replace elements', (done)=> {
@@ -242,15 +238,13 @@ describe('Foreach', ()=> {
   });
 
   describe('`index` computed property', ()=> {
-    let foreach;
-
     beforeEach(()=> {
       node.innerHTML = `
         <li --prop="title: @index" --text="@state">a</li>
         <li --prop="title: @index" --text="@state">b</li>
       `;
 
-      foreach = new Foreach(engine, node, 'test');
+      foreach = Foreach(engine, node, 'test');
     });
 
     it('is set from constructor', (done)=> {
@@ -286,15 +280,13 @@ describe('Foreach', ()=> {
   });
 
   describe('`length` computed property', ()=> {
-    let foreach;
-
     beforeEach(()=> {
       node.innerHTML = `
         <li --prop="title: @length" --text="@state">a</li>
         <li --prop="title: @length" --text="@state">b</li>
       `;
 
-      foreach = new Foreach(engine, node, 'test');
+      foreach = Foreach(engine, node, 'test');
     });
 
     it('is set from constructor', (done)=> {

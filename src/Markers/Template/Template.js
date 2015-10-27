@@ -1,4 +1,6 @@
-class Template {
+import { compile } from '../../Engine';
+
+export default class Template {
   constructor(nodes, engine, host) {
     this.nodes = [].concat(nodes);
     this.host = host || this.nodes[0].parentElement;
@@ -13,9 +15,27 @@ class Template {
     }
   }
 
+  spawn(engine, nodeList, state, properties) {
+    const child = Object.create(engine);
+
+    Object.defineProperties(child, {
+      state: { value: state, writable: true },
+      parent: { value: engine }
+    });
+
+    if (properties) {
+      Object.assign(child, properties);
+    }
+
+    nodeList.forEach(node => compile(child, node));
+    child.setState();
+
+    return child;
+  }
+
   setState(state) {
     if (!this.engine) {
-      this.engine = this.parentEngine._spawn(this.nodes, state);
+      this.engine = this.spawn(this.parentEngine, this.nodes, state);
     } else {
       this.engine.setState(function() {
         this.state = state;
@@ -62,5 +82,3 @@ class Template {
     );
   }
 }
-
-export default Template;

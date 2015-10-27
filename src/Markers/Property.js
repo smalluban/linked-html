@@ -1,40 +1,38 @@
-import List from './List';
+import Expression from '../Expression/Expression';
+import {list} from './List';
 
-class Property extends List {
-  link(node, name, value) {
-    const accessor = this.resolveProperty(node, name);
-
-    this.engine._link(value, {
-      value: accessor.get(),
-      observe: accessor.set
-    });
-  }
-
-  resolveProperty(node, name) {
-    if (name in node) {
-      return {
-        get: ()=> node[name],
-        set: (value)=> node[name] = value
-      };
-    } else {
-      return {
-        get: ()=> {
-          const val = node.getAttribute(name);
-          return val ? val : undefined;
-        },
-        set: (value)=> {
-          if (value === false || value === undefined || value === null) {
-            node.removeAttribute(name);
-          } else {
-            node.setAttribute(name, value === true ? name : value);
-          }
+function resolveProperty(node, name) {
+  if (name in node) {
+    return {
+      get: ()=> node[name],
+      set: (value)=> node[name] = value
+    };
+  } else {
+    return {
+      get: ()=> {
+        const val = node.getAttribute(name);
+        return val ? val : undefined;
+      },
+      set: (value)=> {
+        if (value === false || value === undefined || value === null) {
+          node.removeAttribute(name);
+        } else {
+          node.setAttribute(name, value === true ? name : value);
         }
-      };
-    }
+      }
+    };
   }
 }
 
-export default Property;
+export default function Property(engine, node, evaluate) {
+  list(evaluate, (name, value)=> {
+    const accessor = resolveProperty(node, name);
+    const expr = new Expression(engine, value);
+
+    expr.set(accessor.get(), true);
+    expr.observe(accessor.set, true);
+  });
+}
 
 
 

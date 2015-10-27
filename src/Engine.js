@@ -23,8 +23,8 @@ const Filters = {
   bool: { set: Boolean, get: String }
 };
 
-class Engine {
-  constructor(node, {state, markers, filters, prefix, live = true} = {}) {
+export default class Engine {
+  constructor(node, {state, markers, filters, prefix, live} = {}) {
     if (state && Object(state) !== state) {
       throw TypeError(`Invalid 'state' option, object required.`);
     }
@@ -35,16 +35,15 @@ class Engine {
       _markers: { value: Object.assign({}, Markers, markers) },
       _filters: { value: Object.assign({}, Filters, filters) },
       _prefix: { value: (prefix || '-') + '-' },
-      _live: { value: live },
-      _exprs: { value: new Set() }
+      _live: { value: live === undefined ? true : live }
     });
 
     switch(node.nodeType) {
       case Node.ELEMENT_NODE:
-        this._compile(node);
+        compile(this, node);
         break;
       case Node.DOCUMENT_FRAGMENT_NODE:
-        Array.from(node.children).forEach(n => this._compile(n));
+        Array.from(node.children).forEach(n => compile(this, n));
         break;
       default:
         throw new TypeError('Element or DocumentFragment required.');
@@ -62,78 +61,39 @@ class Engine {
       }
     }
 
-    this._exprs.forEach(expr => expr.value);
-  }
-
-  _link(evaluate, {value, observe} = {}) {
-    const expr = new Expression(evaluate, {
-      engine: this, filters: this._filters
-    });
-
-    if (value !== undefined) {
-      expr.setDefaultTo(value);
-    }
-
-    if (observe) {
-      expr.observe(observe, true);
-    }
-
-    this._exprs.add(expr);
-
-    return expr;
-  }
-
-  _compile(node) {
-    const prefixLength = this._prefix.length;
-    const compileChilds = Array.from(node.attributes)
-      .filter(a => a.name.substr(0, prefixLength) === this._prefix)
-      .reduce((acc, attr) => {
-        const id = attr.name.substr(prefixLength)
-          .replace(/-([a-z])/g, g => g[1].toUpperCase());
-
-        const Marker = this._markers[id];
-
-        try {
-          if (!Marker) {
-            throw new ReferenceError(`Marker '${id}' not found.`);
-          }
-          new Marker(this, node, attr.value);
-        } catch(e) {
-          const nodeText = node.outerHTML.match(/^<[^<]+>/i);
-          e.message = `: ${e.message}\n'${id}' -> ${nodeText}`;
-          throw e;
-        }
-
-        if (Marker._options && Marker._options.breakCompile) {
-          return false;
-        }
-
-        return acc;
-      }, true);
-
-    if (compileChilds && node.children.length) {
-      Array.from(node.children).forEach(child => this._compile(child));
-    }
-  }
-
-  _spawn(nodes, state, properties) {
-    const child = Object.create(this);
-
-    Object.defineProperties(child, {
-      state: { value: state, writable: true },
-      parent: { value: this },
-      _exprs: { value: new Set() }
-    });
-
-    if (properties) {
-      Object.assign(child, properties);
-    }
-
-    nodes.forEach(n => child._compile(n));
-    child.setState();
-
-    return child;
+    Expression.getSet(this).forEach(expr => expr.check());
   }
 }
 
-export default Engine;
+export function compile(engine, node) {
+  const prefixLength = engine._prefix.length;
+  const compileChilds = Array.from(node.attributes)
+    .filter(a => a.name.substr(0, prefixLength) === engine._prefix)
+    .reduce((acc, attr) => {
+      const id = attr.name.substr(prefixLength)
+        .replace(/-([a-z])/g, g => g[1].toUpperCase());
+
+      const marker = engine._markers[id];
+
+      try {
+        if (!marker) {
+          throw new ReferenceError(`marker '${id}' not found.`);
+        }
+        marker(engine, node, attr.value);
+      } catch(e) {
+        const nodeText = node.outerHTML.match(/^<[^<]+>/i);
+        e.message = `: ${e.message}\n'${id}' -> ${nodeText}`;
+        throw e;
+      }
+
+      if (marker._options && marker._options.breakCompile) {
+        return false;
+      }
+
+      return acc;
+    }, true);
+
+  if (compileChilds && node.children.length) {
+    Array.from(node.children).forEach(node => compile(engine, node));
+  }
+}

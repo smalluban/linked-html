@@ -1,9 +1,5 @@
 import Property from './Property';
 
-class Text extends Property {
-  constructor(engine, node, evaluate) {
-    super(engine, node, `textContent: ${evaluate}`);
-  }
+export default function Text(engine, node, evaluate) {
+  Property(engine, node, `textContent: ${evaluate}`);
 }
-
-export default Text;

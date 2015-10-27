@@ -11,14 +11,14 @@ describe('Context', ()=> {
   });
 
   it('create context for nested markers', ()=> {
-    new Context(engine, node, 'test');
+    Context(engine, node, 'test');
     expect(engine.state).toEqual({
       test: { title: 'MyTitle' }
     });
   });
 
   it('updates nested properties', (done)=> {
-    new Context(engine, node, 'test');
+    Context(engine, node, 'test');
     engine.setState({ test: { title: 'new Title' }});
     window.requestAnimationFrame(()=> {
       expect(node.children[0].textContent).toEqual('new Title');
@@ -28,7 +28,7 @@ describe('Context', ()=> {
 
   it('unmounts children for falsy context value', (done)=> {
     engine.setState({ test: false });
-    new Context(engine, node, 'test');
+    Context(engine, node, 'test');
     window.requestAnimationFrame(()=> {
       expect(node.childNodes.length).toEqual(0);
       done();
@@ -36,7 +36,7 @@ describe('Context', ()=> {
   });
 
   it('unmounts children for falsy context from state change', (done)=> {
-    new Context(engine, node, 'test');
+    Context(engine, node, 'test');
     engine.setState({ test: '' });
 
     window.requestAnimationFrame(()=> {
@@ -46,7 +46,7 @@ describe('Context', ()=> {
   });
 
   it('mounts children for object context', (done)=> {
-    new Context(engine, node, 'test');
+    Context(engine, node, 'test');
     engine.setState({ test: { title: 'SuperTitle'}});
 
     window.requestAnimationFrame(()=> {
@@ -62,7 +62,7 @@ describe('Context', ()=> {
           <div --text="title">MyTitle</div>
         </div>
       `;
-      new Context(engine, node, 'test');
+      Context(engine, node, 'test');
     });
 
     it('create nested state', ()=> {

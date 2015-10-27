@@ -1,8 +1,10 @@
-import { Observer } from 'papillon/papillon';
+import { State } from 'papillon/papillon';
 import Path from './Path';
 import Flags from './Flags';
 
-class Expression {
+const map = new WeakMap();
+
+export default class Expression {
   static parse(evaluate) {
     const [temp, filter] = evaluate.split('|');
     const flags = new Set();
@@ -19,10 +21,38 @@ class Expression {
     return [flags, expr, filter];
   }
 
-  constructor(evaluate, { engine, filters } = {}) {
+  static getSet(engine) {
+    let set = map.get(engine);
+    if (!set) {
+      set = new Set();
+      map.set(engine, set);
+    }
+
+    return set;
+  }
+
+  static queue(cb) {
+    if (!this._request) {
+      State.now();
+
+      this._callbacks = new Set().add(cb);
+      this._request = window.requestAnimationFrame(()=> {
+        this._callbacks.forEach(cb => cb());
+        this._request = this._callbacks = undefined;
+      });
+    } else {
+      this._callbacks.add(cb);
+    }
+
+    return cb;
+  }
+
+  constructor(engine, evaluate) {
     if(!evaluate || typeof evaluate !== 'string') {
       throw new TypeError(`'${evaluate}': Invalid input type.`);
     }
+
+    const [flags, expr, filter] = Expression.parse(evaluate.trim());
 
     if (engine.state) {
       this.context = ()=> engine.state;
@@ -35,54 +65,72 @@ class Expression {
       };
     }
 
-    const [flags, expr, filter] = Expression.parse(evaluate.trim());
-
-    this.evaluate = expr;
-
     this.filter = { get: v => v, set: v => v };
 
     if (filter) {
-      if (!filters[filter]) {
+      if (!engine._filters[filter]) {
         throw new ReferenceError(`Filter '${filter}' not found.`);
       }
-      Object.assign(this.filter, filters[filter]);
+      Object.assign(this.filter, engine._filters[filter]);
     }
 
     flags.forEach(f => Flags[f](this, engine));
 
     this.live = engine._live;
-    this.path = new Path(this.evaluate, this.context);
+    this.path = new Path(expr, this.context);
+
+    if (engine._live) {
+      Expression.getSet(engine).add(this);
+    }
   }
 
-  get value() {
+  get() {
     return this.filter.get(this.path.get());
   }
 
-  set value(newVal) {
-    this.path.set(this.filter.set(newVal));
+  set(value, onlyDefaults) {
+    this.cache = this.path.set(this.filter.set(value), onlyDefaults);
+    return this.cache;
   }
 
   call(...args) {
     this.path.call(...args);
   }
 
-  setDefaultTo(value) {
-    return this.path.set(this.filter.set(value), true);
+  check() {
+    if (!this.checkFn) {
+      this.checkFn = Expression.queue(()=> {
+        const newVal = this.get();
+
+        if (this.state && this.state.isChanged()) {
+          this.cb(newVal, this.state.changelog.value);
+        } else if (!State.is(newVal, this.cache)) {
+          this.cb(newVal);
+        }
+
+        this.checkFn = null;
+      });
+    }
   }
 
-  observe(cb, init = false) {
-    const tempValue = this.value;
+  observe(cb, init = false, deep = false) {
+    if (this.cb) {
+      throw new Error('Observe callback already set.');
+    }
+    this.cb = cb;
 
-    if (this.live) {
-      new Observer(this, 'value', (changelog)=> {
-        cb(this.value, changelog.value);
+    if (deep) {
+      const target = Object.defineProperty({}, 'value', {
+        get: this.get.bind(this),
+        configurable: true,
+        enumerable: true
       });
+
+      this.state = new State(target);
     }
 
     if (init) {
-      cb(tempValue);
+      this.cb(this.get());
     }
   }
 }
-
-export default Expression;

@@ -16,13 +16,13 @@ describe('Link', ()=> {
     });
 
     it('set value from view', ()=> {
-      new Link(engine, node, 'test');
+      Link(engine, node, 'test');
       expect(engine.state.test).toEqual('test');
     });
 
     it('get value from state', (done)=> {
       engine.state.test = 'abc';
-      new Link(engine, node, 'test');
+      Link(engine, node, 'test');
 
       window.requestAnimationFrame(()=> {
         expect(node.value).toEqual('abc');
@@ -31,7 +31,7 @@ describe('Link', ()=> {
     });
 
     it('push value to state', ()=> {
-      new Link(engine, node, 'test');
+      Link(engine, node, 'test');
       node.value = 'new value';
       const event = document.createEvent('Event');
       event.initEvent('input', true, false);
@@ -48,13 +48,13 @@ describe('Link', ()=> {
     });
 
     it('set value from view', ()=> {
-      new Link(engine, node, 'test');
+      Link(engine, node, 'test');
       expect(engine.state.test).toEqual('test');
     });
 
     it('get value from state', (done)=> {
       engine.state.test = 'abc';
-      new Link(engine, node, 'test');
+      Link(engine, node, 'test');
 
       window.requestAnimationFrame(()=> {
         expect(node.value).toEqual('abc');
@@ -63,7 +63,7 @@ describe('Link', ()=> {
     });
 
     it('push value to state', ()=> {
-      new Link(engine, node, 'test');
+      Link(engine, node, 'test');
       node.value = 'new value';
       const event = document.createEvent('Event');
       event.initEvent('input', true, false);
@@ -84,16 +84,16 @@ describe('Link', ()=> {
 
     it('set first input checked property', ()=> {
       engine.state.test = 'one';
-      new Link(engine, node.children[0], 'test');
-      new Link(engine, node.children[1], 'test');
+      Link(engine, node.children[0], 'test');
+      Link(engine, node.children[1], 'test');
 
       expect(node.children[0].checked).toEqual(true);
     });
 
     it('set second input checked property', ()=> {
       engine.state.test = 'two';
-      new Link(engine, node.children[0], 'test');
-      new Link(engine, node.children[1], 'test');
+      Link(engine, node.children[0], 'test');
+      Link(engine, node.children[1], 'test');
 
       expect(node.children[1].checked).toEqual(true);
     });
@@ -101,8 +101,8 @@ describe('Link', ()=> {
     it('get value from first checked input', ()=> {
       node.children[0].checked = true;
 
-      new Link(engine, node.children[0], 'test');
-      new Link(engine, node.children[1], 'test');
+      Link(engine, node.children[0], 'test');
+      Link(engine, node.children[1], 'test');
 
       expect(engine.state.test).toEqual('one');
     });
@@ -110,8 +110,8 @@ describe('Link', ()=> {
     it('get value from first checked input', ()=> {
       node.children[1].checked = true;
 
-      new Link(engine, node.children[0], 'test');
-      new Link(engine, node.children[1], 'test');
+      Link(engine, node.children[0], 'test');
+      Link(engine, node.children[1], 'test');
 
       expect(engine.state.test).toEqual('two');
     });
@@ -120,8 +120,8 @@ describe('Link', ()=> {
       document.body.appendChild(node);
 
       node.children[0].checked = true;
-      new Link(engine, node.children[0], 'test');
-      new Link(engine, node.children[1], 'test');
+      Link(engine, node.children[0], 'test');
+      Link(engine, node.children[1], 'test');
 
       node.children[1].checked = true;
 
@@ -152,18 +152,18 @@ describe('Link', ()=> {
     });
 
     it('set value from view', ()=> {
-      new Link(engine, node, 'test');
+      Link(engine, node, 'test');
       expect(engine.state.test).toEqual('1');
     });
 
     it('get value from state', ()=> {
       engine.state.test = '2';
-      new Link(engine, node, 'test');
+      Link(engine, node, 'test');
       expect(node.value).toEqual('2');
     });
 
     it('push value to state', ()=> {
-      new Link(engine, node, 'test');
+      Link(engine, node, 'test');
 
       node.options[1].selected = true;
       const event = document.createEvent('Event');
@@ -175,7 +175,7 @@ describe('Link', ()=> {
     });
 
     it('refresh select value after options mutation', (done)=> {
-      new Link(engine, node, 'test');
+      Link(engine, node, 'test');
 
       node.options[0].value = '2';
       node.options[1].value = '1';
@@ -205,19 +205,19 @@ describe('Link', ()=> {
     });
 
     it('set value from view', ()=> {
-      new Link(engine, node, 'test');
+      Link(engine, node, 'test');
       expect(engine.state.test).toEqual(['1','3']);
     });
 
     it('get value from state', ()=> {
       engine.state.test = ['2','4'];
-      new Link(engine, node, 'test');
+      Link(engine, node, 'test');
       expect(node.options[1].selected).toEqual(true);
       expect(node.options[3].selected).toEqual(true);
     });
 
     it('push value to state', ()=> {
-      new Link(engine, node, 'test');
+      Link(engine, node, 'test');
 
       node.options[1].selected = true;
       const event = document.createEvent('Event');
@@ -229,9 +229,7 @@ describe('Link', ()=> {
     });
 
     it('update target object in state', ()=> {
-      new Link(engine, node, 'test');
-
-      debugger;
+      Link(engine, node, 'test');
 
       const target = engine.state.test;
 
@@ -245,7 +243,7 @@ describe('Link', ()=> {
     });
 
     it('refresh select value after options mutation', (done)=> {
-      new Link(engine, node, 'test');
+      Link(engine, node, 'test');
 
       node.options[0].value = '2';
       node.options[1].value = '1';

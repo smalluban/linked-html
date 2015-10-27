@@ -11,17 +11,17 @@ describe('ClassList', ()=> {
 
   it('set state property to `true`', ()=> {
     node.className = 'myClass';
-    new ClassList(engine, node, 'myClass: test');
+    ClassList(engine, node, 'myClass: test');
     expect(engine.state.test).toEqual(true);
   });
 
   it('set state property to `false`', ()=> {
-    new ClassList(engine, node, 'myClass: test');
+    ClassList(engine, node, 'myClass: test');
     expect(engine.state.test).toEqual(false);
   });
 
   it('set `myClass` class', (done)=> {
-    new ClassList(engine, node, 'myClass: test');
+    ClassList(engine, node, 'myClass: test');
     engine.setState({ test: true });
 
     window.requestAnimationFrame(()=> {
@@ -32,7 +32,7 @@ describe('ClassList', ()=> {
 
   it('unset `myClass` class', (done)=> {
     node.className = 'myClass';
-    new ClassList(engine, node, 'myClass: test');
+    ClassList(engine, node, 'myClass: test');
     engine.setState({ test: false });
 
     window.requestAnimationFrame(()=> {
@@ -43,7 +43,7 @@ describe('ClassList', ()=> {
 
   it('use class list', ()=> {
     node.setAttribute('class', 'a b c');
-    new ClassList(engine, node, 'a: test1; b: test2; d: test3');
+    ClassList(engine, node, 'a: test1; b: test2; d: test3');
 
     expect(engine.state).toEqual({
       test1: true,

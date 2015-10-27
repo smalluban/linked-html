@@ -8,7 +8,7 @@ describe('Text', ()=> {
     node = document.createElement('div');
     node.textContent = 'This is simple text';
     engine = new Engine(document.createElement('div'));
-    new Text(engine, node, 'test');
+    Text(engine, node, 'test');
   });
 
   it('get textContent property from node', ()=> {

@@ -1,37 +1,6 @@
 import Engine from '../src/Engine';
 
-describe('Engine _link method', ()=> {
-
-  describe('use custom filter', ()=> {
-    let engine, filter;
-
-    beforeEach(()=> {
-      filter = {
-        get: jasmine.createSpy('get filter'),
-        set: jasmine.createSpy('set filter')
-      };
-      engine = new Engine(document.createElement('div'), {
-        filters: { filter },
-      });
-    });
-
-    it('- set method', ()=> {
-      const expr = engine._link('test|filter');
-      expr.value = 'new value';
-      expect(filter.set).toHaveBeenCalled();
-      expect(filter.get).not.toHaveBeenCalled();
-    });
-
-    it('- get method', ()=> {
-      const expr = engine._link('test|filter');
-      expr.value;
-      expect(filter.get).toHaveBeenCalled();
-      expect(filter.set).not.toHaveBeenCalled();
-    });
-  });
-});
-
-describe('Engine _compile method', ()=> {
+describe('Engine instance', ()=> {
 
   let el, marker;
 

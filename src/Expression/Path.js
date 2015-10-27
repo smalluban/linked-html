@@ -1,4 +1,4 @@
-class Path {
+export default class Path {
   constructor(evaluate, context) {
     if (!evaluate) {
       throw new TypeError('Path cannot be empty.');
@@ -126,5 +126,3 @@ class Path {
     delete result.context[result.property];
   }
 }
-
-export default Path;

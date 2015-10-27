@@ -1,3 +1,5 @@
+import Expression from '../Expression/Expression';
+
 class Wrapper {
   constructor(node) {
     this.node = node;
@@ -43,7 +45,6 @@ class SelectWrapper extends Wrapper {
     super(node);
 
     new MutationObserver(()=> {
-      debugger;
       this.set(this.value);
     }).observe(node, {
       attributes: true,
@@ -71,7 +72,6 @@ class SelectWrapper extends Wrapper {
 
 class MultiSelectWrapper extends SelectWrapper {
   get() {
-    debugger;
     const values = this.value || [];
     const newValues = Array.from(this.node.selectedOptions).map(o => o.value);
 
@@ -94,39 +94,35 @@ class MultiSelectWrapper extends SelectWrapper {
   }
 }
 
-class Link {
-  constructor(engine, node, evaluate) {
-    let wrapper;
+export default function Link(engine, node, evaluate) {
+  let wrapper;
 
-    switch(node.type) {
-      case "checkbox":
-      case "radio":
-        wrapper = new CheckWrapper(node);
-        break;
+  switch(node.type) {
+    case "checkbox":
+    case "radio":
+      wrapper = new CheckWrapper(node);
+      break;
 
-      case "select-one":
-        wrapper = new SelectWrapper(node);
-        break;
+    case "select-one":
+      wrapper = new SelectWrapper(node);
+      break;
 
-      case "select-multiple":
-        wrapper = new MultiSelectWrapper(node);
-        break;
+    case "select-multiple":
+      wrapper = new MultiSelectWrapper(node);
+      break;
 
-      default:
-        wrapper = new Wrapper(node);
-    }
-
-    const expr = engine._link(evaluate, {
-      value: wrapper.get(),
-      observe: wrapper.set.bind(wrapper)
-    });
-
-    wrapper.observe(()=> {
-      engine.root.setState(()=> {
-        expr.value = wrapper.get();
-      });
-    });
+    default:
+      wrapper = new Wrapper(node);
   }
-}
 
-export default Link;
+  const expr = new Expression(engine, evaluate);
+
+  expr.set(wrapper.get(), true);
+  expr.observe(wrapper.set.bind(wrapper), true);
+
+  wrapper.observe(()=> {
+    engine.root.setState(()=> {
+      expr.set(wrapper.get());
+    });
+  });
+}

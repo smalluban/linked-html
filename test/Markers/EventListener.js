@@ -12,8 +12,12 @@ describe('EventListener', ()=> {
   });
 
   it('call function on proper event', ()=> {
-    new EventListener(engine, node, 'click: @test');
-    node.dispatchEvent(new Event('click'));
+    EventListener(engine, node, 'click: @test');
+
+    const event = document.createEvent('Event');
+    event.initEvent('click', true, false);
+    node.dispatchEvent(event);
+
     expect(spy).toHaveBeenCalled();
     expect(spy.calls.mostRecent().object).toEqual(engine);
   });

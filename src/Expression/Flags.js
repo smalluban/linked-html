@@ -9,12 +9,7 @@ const Flags = {
     expr.context = ()=> engine;
   },
   '&': function(expr) {
-    const proto = Object.getPrototypeOf(expr);
-    const desc = Object.getOwnPropertyDescriptor(proto, 'value');
-
-    desc.set = ()=> {};
-    Object.defineProperty(expr, 'value', desc);
-    Object.defineProperty(expr, 'setDefaultTo', { value: ()=> {} });
+    expr.set = ()=> {};
   }
 };
 

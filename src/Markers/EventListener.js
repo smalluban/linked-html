@@ -1,10 +1,9 @@
-import List from './List';
+import Expression from '../Expression/Expression';
+import {list} from './List';
 
-class EventListener extends List {
-  link(node, name, value) {
-    const expr = this.engine._link(value);
+export default function EventListener(engine, node, evaluate) {
+  list(evaluate, (name, value)=> {
+    const expr = new Expression(engine, value);
     node.addEventListener(name, (e)=> expr.call(e));
-  }
+  });
 }
-
-export default EventListener;

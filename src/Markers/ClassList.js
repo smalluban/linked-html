@@ -1,20 +1,17 @@
-import List from './List';
+import Expression from '../Expression/Expression';
+import {list} from './List';
 
-class ClassList extends List {
-  link(node, className, evaluate) {
-    const cb = function(val) {
+export default function ClassList(engine, node, evaluate) {
+  list(evaluate, (name, value)=> {
+    const expr = new Expression(engine, value);
+
+    expr.set(node.classList.contains(name), true);
+    expr.observe(val => {
       if (val) {
-        node.classList.add(className);
+        node.classList.add(name);
       } else {
-        node.classList.remove(className);
+        node.classList.remove(name);
       }
-    };
-
-    this.engine._link(evaluate, {
-      value: node.classList.contains(className),
-      observe: cb
-    });
-  }
+    }, true);
+  });
 }
-
-export default ClassList;

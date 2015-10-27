@@ -20,15 +20,15 @@ function extendEngine(engine) {
   }
 }
 
-class IndexedTemplate extends Template {
+export default class IndexedTemplate extends Template {
   constructor(nodes, engine, host) {
     super(nodes, extendEngine(engine), host);
   }
 
   setState(state, {index, length}) {
     if (!this.engine) {
-      this.engine = this.parentEngine._spawn(
-        this.nodes, state, {index, length}
+      this.engine = this.spawn(
+        this.parentEngine, this.nodes, state, {index, length}
       );
     } else {
       this.engine.setState(function() {
@@ -39,5 +39,3 @@ class IndexedTemplate extends Template {
     return this;
   }
 }
-
-export default IndexedTemplate;

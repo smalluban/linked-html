@@ -1,6 +1,7 @@
 import IndexedTemplate from './Template/IndexedTemplate';
+import Expression from '../Expression/Expression';
 
-class Foreach {
+class Controller {
   constructor(engine, node, evaluate) {
     if (!node.children[0]) {
       throw new Error('No children elements.');
@@ -9,12 +10,12 @@ class Foreach {
     this.engine = engine;
     this.node = node;
 
-    const expr = engine._link(evaluate);
-    let list = expr.value;
+    const expr = new Expression(engine, evaluate);
+    let list = expr.get();
     let createFromView = false;
 
     if(list === undefined) {
-      list = expr.setDefaultTo([]);
+      list = expr.set([], true);
       createFromView = true;
     }
 
@@ -37,7 +38,7 @@ class Foreach {
       this.clear(list);
     }
 
-    expr.observe(this.render.bind(this));
+    expr.observe(this.render.bind(this), false, true);
   }
 
   createFromView(list) {
@@ -159,8 +160,10 @@ class Foreach {
   }
 }
 
+export default function Foreach(engine, node, evaluate) {
+  return new Controller(engine, node, evaluate);
+}
+
 Foreach._options = {
   breakCompile: true
 };
-
-export default Foreach;
