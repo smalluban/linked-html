@@ -10,6 +10,9 @@ const Flags = {
   },
   '&': function(expr) {
     expr.set = ()=> {};
+  },
+  '*': function(expr) {
+    expr.deep = true;
   }
 };
 

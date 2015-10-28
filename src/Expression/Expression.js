@@ -63,7 +63,7 @@ export default class Expression {
     return this.path.call(...args);
   }
 
-  observe(cb, init = false, deep = false) {
+  observe(cb, init = false, deep = this.deep) {
     let target;
     let cache = this.get();
 

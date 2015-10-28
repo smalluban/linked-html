@@ -19,7 +19,7 @@ export default function Context(engine, node, evaluate) {
     if (!state) {
       template.remove();
     } else {
-      if (Object(state) !== state) {
+      if (typeof state !== 'object') {
         throw new TypeError('Invalid context target.');
       }
       template.setState(state).append();

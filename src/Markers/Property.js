@@ -1,6 +1,16 @@
 import Expression from '../Expression/Expression';
 import {list} from './List';
 
+export default function Property(engine, node, evaluate) {
+  list(evaluate, (name, value)=> {
+    const accessor = resolveProperty(node, name);
+    const expr = new Expression(engine, value);
+
+    expr.set(accessor.get(), true);
+    expr.observe(accessor.set, true);
+  });
+}
+
 function resolveProperty(node, name) {
   if (name in node) {
     return {
@@ -22,16 +32,6 @@ function resolveProperty(node, name) {
       }
     };
   }
-}
-
-export default function Property(engine, node, evaluate) {
-  list(evaluate, (name, value)=> {
-    const accessor = resolveProperty(node, name);
-    const expr = new Expression(engine, value);
-
-    expr.set(accessor.get(), true);
-    expr.observe(accessor.set, true);
-  });
 }
 
 

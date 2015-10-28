@@ -12,6 +12,6 @@ export default function ClassList(engine, node, evaluate) {
       } else {
         node.classList.remove(name);
       }
-    }, true);
+    }, true, false);
   });
 }

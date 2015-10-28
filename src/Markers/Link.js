@@ -118,9 +118,6 @@ export default function Link(engine, node, evaluate) {
   const expr = new Expression(engine, evaluate);
 
   expr.set(wrapper.get(), true);
-  expr.observe(wrapper.set.bind(wrapper), true);
-
-  wrapper.observe(()=> {
-    expr.set(wrapper.get());
-  });
+  expr.observe(wrapper.set.bind(wrapper), true, false);
+  wrapper.observe(()=> expr.set(wrapper.get()));
 }
