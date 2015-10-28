@@ -121,8 +121,6 @@ export default function Link(engine, node, evaluate) {
   expr.observe(wrapper.set.bind(wrapper), true);
 
   wrapper.observe(()=> {
-    engine.root.setState(()=> {
-      expr.set(wrapper.get());
-    });
+    expr.set(wrapper.get());
   });
 }

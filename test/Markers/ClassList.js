@@ -22,7 +22,7 @@ describe('ClassList', ()=> {
 
   it('set `myClass` class', (done)=> {
     ClassList(engine, node, 'myClass: test');
-    engine.setState({ test: true });
+    engine.state.test = true;
 
     window.requestAnimationFrame(()=> {
       expect(node.classList.contains('myClass')).toEqual(true);
@@ -33,7 +33,7 @@ describe('ClassList', ()=> {
   it('unset `myClass` class', (done)=> {
     node.className = 'myClass';
     ClassList(engine, node, 'myClass: test');
-    engine.setState({ test: false });
+    engine.state.test = false;
 
     window.requestAnimationFrame(()=> {
       expect(node.classList.contains('myClass')).toEqual(false);

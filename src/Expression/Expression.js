@@ -20,41 +20,25 @@ export default class Expression {
     return [flags, expr, filter];
   }
 
-  static queue(cb) {
-    if (!this._request) {
-      State.now();
-
-      this._callbacks = new Set().add(cb);
-      this._request = window.requestAnimationFrame(()=> {
-        this._callbacks.forEach(cb => cb());
-        this._request = this._callbacks = undefined;
-      });
-    } else {
-      this._callbacks.add(cb);
-    }
-
-    return cb;
-  }
-
   constructor(engine, evaluate) {
     if(!evaluate || typeof evaluate !== 'string') {
       throw new TypeError(`'${evaluate}': Invalid input type.`);
     }
 
     const [flags, expr, filter] = Expression.parse(evaluate.trim());
+    this.engine = engine;
+    this.filter = { get: v => v, set: v => v };
 
-    if (engine.state) {
-      this.context = ()=> engine.state;
+    if (this.engine.state) {
+      this.context = ()=> this.engine.state;
     } else {
       this.context = ()=> {
-        if (engine.state === undefined) {
-          engine.state = {};
+        if (this.engine.state === undefined) {
+          this.engine.state = {};
         }
-        return engine.state;
+        return this.engine.state;
       };
     }
-
-    this.filter = { get: v => v, set: v => v };
 
     if (filter) {
       if (!engine._filters[filter]) {
@@ -64,10 +48,7 @@ export default class Expression {
     }
 
     flags.forEach(f => Flags[f](this, engine));
-
     this.path = new Path(expr, this.context);
-
-    Engine.exprs(engine).add(this);
   }
 
   get() {
@@ -75,48 +56,39 @@ export default class Expression {
   }
 
   set(value, onlyDefaults) {
-    this.cache = this.path.set(this.filter.set(value), onlyDefaults);
-    return this.cache;
+    return this.path.set(this.filter.set(value), onlyDefaults);
   }
 
   call(...args) {
-    this.path.call(...args);
-  }
-
-  check() {
-    if (!this.checkFn) {
-      this.checkFn = Expression.queue(()=> {
-        const newVal = this.get();
-
-        if (this.state && this.state.isChanged()) {
-          this.cb(newVal, this.state.changelog.value);
-        } else if (!State.is(newVal, this.cache)) {
-          this.cb(newVal);
-        }
-
-        this.checkFn = null;
-      });
-    }
+    return this.path.call(...args);
   }
 
   observe(cb, init = false, deep = false) {
-    if (this.cb) {
-      throw new Error('Observe callback already set.');
-    }
-    this.cb = cb;
+    let target;
+    let cache = this.get();
 
     if (deep) {
-      const target = Object.defineProperty({}, 'value', {
+      target = new State(Object.defineProperty({}, 'value', {
         get: this.get.bind(this),
         configurable: true,
         enumerable: true
-      });
-
-      this.state = new State(target);
+      }));
     }
 
+    Engine.watch(this.engine, ()=> {
+      const newVal = this.get();
+
+      if (target && target.isChanged()) {
+        cb(newVal, target.changelog.value);
+      } else if (!State.is(newVal, cache)) {
+        cb(newVal);
+      }
+
+      cache = newVal;
+    });
+
     if (init) {
-      this.cb(this.get());
+      cb(cache);
     }
   }
 }

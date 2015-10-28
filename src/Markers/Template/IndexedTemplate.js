@@ -26,15 +26,8 @@ export default class IndexedTemplate extends Template {
   }
 
   setState(state, {index, length}) {
-    if (!this.engine) {
-      this.engine = this.spawn(
-        this.parentEngine, this.nodes, state, {index, length}
-      );
-    } else {
-      this.engine.setState(function() {
-        Object.assign(this, { state, index, length });
-      });
-    }
+    super.setState(state);
+    Object.assign(this.engine, {index, length});
 
     return this;
   }

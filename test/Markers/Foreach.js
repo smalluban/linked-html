@@ -36,7 +36,7 @@ describe('Foreach', ()=> {
       <li --text="test">Title1</li>
       <li --text="test">Title2</li>
     `;
-    engine.setState({ test: [] });
+    engine.state.test = [];
     Foreach(engine, node, 'test');
 
     expect(node.children.length).toEqual(0);
@@ -47,9 +47,7 @@ describe('Foreach', ()=> {
       <li --text="@state">Title1</li>
     `;
 
-    engine.setState({
-      test: [undefined, 'two', 'three']
-    });
+    engine.state.test =  [undefined, 'two', 'three'];
 
     Foreach(engine, node, 'test');
 
@@ -63,9 +61,7 @@ describe('Foreach', ()=> {
       <li --text="test">Title1</li>
     `;
 
-    engine.setState({
-      test: [undefined, { test: 'two'}, { test: 'three'}]
-    });
+    engine.state.test = [undefined, { test: 'two'}, { test: 'three'}];
 
     Foreach(engine, node, 'test');
 
@@ -85,9 +81,7 @@ describe('Foreach', ()=> {
     });
 
     it('adds new element', (done)=> {
-      engine.setState(state => {
-        state.test.push('Title3');
-      });
+      engine.state.test.push('Title3');
 
       window.requestAnimationFrame(()=> {
         expect(node.children.length).toEqual(4);
@@ -96,9 +90,7 @@ describe('Foreach', ()=> {
     });
 
     it('removes element', (done)=> {
-      engine.setState(state => {
-        state.test.shift();
-      });
+      engine.state.test.shift();
 
       window.requestAnimationFrame(()=> {
         expect(node.children.length).toEqual(2);
@@ -107,9 +99,7 @@ describe('Foreach', ()=> {
     });
 
     it('updates one value', (done)=> {
-      engine.setState(state => {
-        state.test[0] = 'new state';
-      });
+      engine.state.test[0] = 'new state';
 
       window.requestAnimationFrame(()=> {
         expect(node.children[0].textContent).toEqual('new state');
@@ -118,9 +108,7 @@ describe('Foreach', ()=> {
     });
 
     it('updates many values', (done)=> {
-      engine.setState(state => {
-        state.test.sort();
-      });
+      engine.state.test.sort();
 
       window.requestAnimationFrame(()=> {
         expect(node.children[0].textContent).toEqual('Title1');
@@ -135,9 +123,7 @@ describe('Foreach', ()=> {
       const node1 = node.children[1];
       const node2 = node.children[2];
 
-      engine.setState(state => {
-        state.test.sort();
-      });
+      engine.state.test.sort();
 
       window.requestAnimationFrame(()=> {
         expect(node.children[0]).toEqual(node1);
@@ -148,11 +134,10 @@ describe('Foreach', ()=> {
     });
 
     it('for multiply changes', (done) => {
-      engine.setState(state => {
-        state.test.sort();
-        state.test[2] = 'New Title';
-        state.test[3] = 'Title3';
-      });
+      const state = engine.state;
+      state.test.sort();
+      state.test[2] = 'New Title';
+      state.test[3] = 'Title3';
 
       window.requestAnimationFrame(()=> {
         expect(node.children[0].textContent).toEqual('Title1');
@@ -164,11 +149,10 @@ describe('Foreach', ()=> {
     });
 
     it('creates new items collection', (done) => {
-      engine.setState(state => {
-        state.test.sort();
-        state.test[2] = 'New Title';
-        state.test[3] = 'Title3';
-      });
+      const state = engine.state;
+      state.test.sort();
+      state.test[2] = 'New Title';
+      state.test[3] = 'Title3';
 
       window.requestAnimationFrame(()=> {
         const items = foreach.items.map(i => {
@@ -194,7 +178,7 @@ describe('Foreach', ()=> {
 
     it('replace elements', (done)=> {
       const newArray = ['one', 'two', 'three'];
-      engine.setState({test: newArray});
+      engine.state.test = newArray;
 
       window.requestAnimationFrame(()=> {
         let values = Array.from(node.children).map(n => n.textContent);
@@ -205,7 +189,7 @@ describe('Foreach', ()=> {
 
     it('add new elements', (done)=> {
       const newArray = ['one', 'two', 'three', 'four'];
-      engine.setState({ test: newArray });
+      engine.state.test = newArray;
 
       window.requestAnimationFrame(()=> {
         let values = Array.from(node.children).map(n => n.textContent);
@@ -216,7 +200,7 @@ describe('Foreach', ()=> {
 
     it('removes elements', (done)=> {
       const newArray = ['one'];
-      engine.setState({ test: newArray });
+      engine.state.test = newArray;
 
       window.requestAnimationFrame(()=> {
         let values = Array.from(node.children).map(n => n.textContent);
@@ -227,7 +211,7 @@ describe('Foreach', ()=> {
 
     it('updates items collection', (done)=> {
       const newArray = ['one'];
-      engine.setState({ test: newArray });
+      engine.state.test = newArray;
 
       window.requestAnimationFrame(()=> {
         let nodes = foreach.items.map(i => i.nodes[0]);
@@ -256,7 +240,7 @@ describe('Foreach', ()=> {
     });
 
     it('is changed when updated', (done)=> {
-      engine.setState({ test: ['a','b','c']});
+      engine.state.test = ['a','b','c'];
 
       window.requestAnimationFrame(()=> {
         const items = Array.from(node.children).map(i => i.title);
@@ -266,14 +250,13 @@ describe('Foreach', ()=> {
     });
 
     it('is changed when relocated', (done)=> {
-      engine.setState((state)=> {
-        state.test[0] = 'b';
-        state.test[1] = 'a';
-      });
+      const state = engine.state;
+      state.test[0] = 'b';
+      state.test[1] = 'a';
 
       window.requestAnimationFrame(()=> {
-        const items = Array.from(node.children).map(i => i.title);
-        expect(items).toEqual(["0", "1"]);
+        const indexes = Array.from(node.children).map(i => i.title);
+        expect(indexes).toEqual(["0", "1"]);
         done();
       });
     });
@@ -298,7 +281,7 @@ describe('Foreach', ()=> {
     });
 
     it('is changed when updated', (done)=> {
-      engine.setState({ test: ['a','b','c']});
+      engine.state.test = ['a','b','c'];
 
       window.requestAnimationFrame(()=> {
         const items = Array.from(node.children).map(i => i.title);

@@ -19,7 +19,7 @@ describe('Context', ()=> {
 
   it('updates nested properties', (done)=> {
     Context(engine, node, 'test');
-    engine.setState({ test: { title: 'new Title' }});
+    engine.state.test = { title: 'new Title' };
     window.requestAnimationFrame(()=> {
       expect(node.children[0].textContent).toEqual('new Title');
       done();
@@ -27,7 +27,7 @@ describe('Context', ()=> {
   });
 
   it('unmounts children for falsy context value', (done)=> {
-    engine.setState({ test: false });
+    engine.state.test = false;
     Context(engine, node, 'test');
     window.requestAnimationFrame(()=> {
       expect(node.childNodes.length).toEqual(0);
@@ -37,7 +37,7 @@ describe('Context', ()=> {
 
   it('unmounts children for falsy context from state change', (done)=> {
     Context(engine, node, 'test');
-    engine.setState({ test: '' });
+    engine.state.test = '';
 
     window.requestAnimationFrame(()=> {
       expect(node.childNodes.length).toEqual(0);
@@ -47,7 +47,7 @@ describe('Context', ()=> {
 
   it('mounts children for object context', (done)=> {
     Context(engine, node, 'test');
-    engine.setState({ test: { title: 'SuperTitle'}});
+    engine.state.test = { title: 'SuperTitle' };
 
     window.requestAnimationFrame(()=> {
       expect(node.children[0].textContent).toEqual('SuperTitle');
@@ -72,9 +72,7 @@ describe('Context', ()=> {
     });
 
     it('update nested state', (done)=> {
-      engine.setState(state => {
-        state.test.inner.title = 'New title';
-      });
+      engine.state.test.inner.title = 'New title';
 
       window.requestAnimationFrame(()=> {
         expect(node.children[0].children[0].textContent).toEqual('New title');

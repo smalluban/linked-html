@@ -17,14 +17,14 @@ describe('Property', ()=> {
   });
 
   it('set node property from engine state path', ()=> {
-    engine.setState({ test: 'new value' });
+    engine.state.test = 'new value';
     Property(engine, node, 'title: test');
     expect(node.title).toEqual('new value');
   });
 
-  it('set node property from engine setState method', (done)=> {
+  it('set node property from engine state', (done)=> {
     Property(engine, node, 'title: test');
-    engine.setState({test: 'test'});
+    engine.state.test = 'test';
 
     window.requestAnimationFrame(()=> {
       expect(node.title).toEqual('test');
@@ -43,20 +43,20 @@ describe('Property', ()=> {
   describe('fallback', ()=> {
 
     it('as attribute value', ()=> {
-      engine.setState({test: 'test'});
+      engine.state.test = 'test';
       Property(engine, node, 'some-attr: test');
       expect(node.getAttribute('some-attr')).toEqual('test');
     });
 
     it('as attribute name for true value', ()=> {
-      engine.setState({ test: true });
+      engine.state.test = true;
       Property(engine, node, 'some-attr: test');
 
       expect(node.getAttribute('some-attr')).toEqual('some-attr');
     });
 
     it('as removed attribute for false value', ()=> {
-      engine.setState({ test: false });
+      engine.state.test = false;
       Property(engine, node, 'some-attr: test');
 
       expect(node.getAttribute('some-attr')).toEqual(null);

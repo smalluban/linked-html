@@ -16,7 +16,7 @@ describe('Text', ()=> {
   });
 
   it('set textContent property to node', (done)=> {
-    engine.setState({test: 'My title'});
+    engine.state.test = 'My title';
 
     window.requestAnimationFrame(()=> {
       expect(node.textContent).toEqual('My title');

@@ -1,3 +1,5 @@
+import { State } from 'papillon/papillon';
+
 import Link from './Markers/Link';
 import ClassList from './Markers/ClassList';
 import Context from './Markers/Context';
@@ -21,26 +23,60 @@ const Filters = {
   bool: { set: Boolean, get: String }
 };
 
-const configMap = new WeakMap();
-const exprsMap = new WeakMap();
+const watchers = new WeakMap();
+const configs = new WeakMap();
+const states = new WeakMap();
 
 export default class Engine {
-  static config(engine) {
-    let config = configMap.get(engine.root);
-    if (!config) {
-      config = {};
-      configMap.set(engine, config);
+  static watch(engine, cb) {
+    let e = watchers.get(engine);
+    if (!e) {
+      e = new Set();
+      watchers.set(engine, e);
     }
-    return config;
+    e.add(cb);
   }
 
-  static exprs(engine) {
-    let exprs = exprsMap.get(engine);
-    if (!exprs) {
-      exprs = new Set();
-      exprsMap.set(engine, exprs);
+  static config(engine) {
+    let c = configs.get(engine.root);
+    if (!c) {
+      c = {};
+      configs.set(engine, c);
     }
-    return exprs;
+    return c;
+  }
+
+  static queue(engine) {
+    if (!this._request) {
+      State.now();
+
+      this._engines = new Set().add(engine);
+      this._request = window.requestAnimationFrame(()=> {
+        this._engines.forEach(e => {
+          const set = watchers.get(e);
+          if (set) {
+            set.forEach(cb => cb());
+          }
+        });
+        this._request = this._engines = undefined;
+      });
+    } else {
+      this._engines.add(engine);
+    }
+  }
+
+  static spawn(engine, nodeList, state) {
+    const config = Engine.config(engine);
+    const childEngine = Object.create(engine);
+
+    Object.defineProperty(childEngine, 'parent', { value: engine });
+    childEngine.state = state;
+
+    nodeList.forEach(
+      node => compile(node, childEngine, config.prefix, config.markers)
+    );
+
+    return childEngine;
   }
 
   constructor(node, {state, markers, filters, prefix, live} = {}) {
@@ -55,9 +91,8 @@ export default class Engine {
       live: { value: live === undefined ? true : live }
     });
 
-    Object.defineProperties(this, {
-      root: { value: this }, state: { value: state || {} }
-    });
+    Object.defineProperty(this, 'root', { value: this });
+    this.state = state || {};
 
     switch(node.nodeType) {
       case Node.ELEMENT_NODE:
@@ -71,24 +106,23 @@ export default class Engine {
       default:
         throw new TypeError('Element or DocumentFragment required.');
     }
-
-    this.setState();
   }
 
-  setState(fnOrProps) {
-    if (fnOrProps) {
-      if (typeof fnOrProps === 'function') {
-        fnOrProps.call(this, this.state);
-      } else {
-        Object.assign(this.state, fnOrProps);
-      }
+  get state() {
+    const s = states.get(this);
+    if ((typeof s === 'object') && s !== null) {
+      Engine.queue(this);
     }
+    return s;
+  }
 
-    Engine.exprs(this).forEach(expr => expr.check());
+  set state(value) {
+    states.set(this, value);
+    Engine.queue(this);
   }
 }
 
-export function compile(node, engine, prefix, markers) {
+function compile(node, engine, prefix, markers) {
   const prefixLength = prefix.length;
   const compileChilds = Array.from(node.attributes)
     .filter(a => a.name.substr(0, prefixLength) === prefix)

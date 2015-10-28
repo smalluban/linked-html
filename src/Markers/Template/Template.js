@@ -1,4 +1,4 @@
-import Engine, { compile } from '../../Engine';
+import Engine from '../../Engine';
 
 export default class Template {
   constructor(nodes, engine, host) {
@@ -15,46 +15,22 @@ export default class Template {
     }
   }
 
-  spawn(engine, nodeList, state, properties) {
-    const config = Engine.config(engine);
-    const child = Object.create(engine);
-
-    Object.defineProperties(child, {
-      state: { value: state, writable: true },
-      parent: { value: engine }
-    });
-
-    if (properties) {
-      Object.assign(child, properties);
-    }
-
-    nodeList.forEach(
-      node => compile(node, child, config.prefix, config.markers)
-    );
-
-    child.setState();
-
-    return child;
-  }
-
-  setState(state) {
-    if (!this.engine) {
-      this.engine = this.spawn(this.parentEngine, this.nodes, state);
-    } else {
-      this.engine.setState(function() {
-        this.state = state;
-      });
-    }
-
-    return this;
-  }
-
   getState() {
     if (!this.engine) {
       throw new Error('Template does not fully initalized.');
     }
 
     return this.engine.state;
+  }
+
+  setState(state) {
+    if (!this.engine) {
+      this.engine = Engine.spawn(this.parentEngine, this.nodes, state);
+    } else {
+      this.engine.state = state;
+    }
+
+    return this;
   }
 
   append(forceAppend = false, insertBefore = null) {
