@@ -133,7 +133,7 @@ describe('Link', ()=> {
 
       expect(engine.state.test).toEqual('two');
 
-      node.remove();
+      document.body.removeChild(node);
     });
 
   });

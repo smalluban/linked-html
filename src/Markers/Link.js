@@ -73,7 +73,9 @@ class SelectWrapper extends Wrapper {
 class MultiSelectWrapper extends SelectWrapper {
   get() {
     const values = this.value || [];
-    const newValues = Array.from(this.node.selectedOptions).map(o => o.value);
+    const newValues = Array.from(this.node.options)
+      .filter(o => o.selected)
+      .map(o => o.value);
 
     Object.assign(values, newValues);
     values.length = newValues.length;

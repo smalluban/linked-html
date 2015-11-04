@@ -11,6 +11,14 @@ describe('EventListener', ()=> {
     engine.test = spy;
   });
 
+  beforeEach(()=> {
+    document.body.appendChild(node);
+  });
+
+  afterEach(()=> {
+    document.body.removeChild(node);
+  });
+
   it('call function on proper event', ()=> {
     EventListener(engine, node, 'click: @test');
 
