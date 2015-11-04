@@ -21,5 +21,8 @@
   "ignore": [
     "node_modules",
     "test"
-  ]
+  ],
+  "dependencies": {
+    "papillon": "~1.5.0"
+  }
 }
