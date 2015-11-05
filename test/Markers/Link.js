@@ -177,8 +177,8 @@ describe('Link', ()=> {
     it('refresh select value after options mutation', (done)=> {
       Link(engine, node, 'test');
 
-      node.options[0].value = '2';
-      node.options[1].value = '1';
+      node.options[0].setAttribute('value', '2');
+      node.options[1].setAttribute('value', '1');
 
       window.requestAnimationFrame(()=> {
         expect(node.value).toEqual('1');
@@ -245,8 +245,8 @@ describe('Link', ()=> {
     it('refresh select value after options mutation', (done)=> {
       Link(engine, node, 'test');
 
-      node.options[0].value = '2';
-      node.options[1].value = '1';
+      node.options[0].setAttribute('value', '2');
+      node.options[1].setAttribute('value', '1');
 
       window.requestAnimationFrame(()=> {
         expect(node.value).toEqual('1');
