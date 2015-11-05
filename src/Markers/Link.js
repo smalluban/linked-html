@@ -44,14 +44,16 @@ class SelectWrapper extends Wrapper {
   constructor(node) {
     super(node);
 
-    new MutationObserver(()=> {
-      this.set(this.value);
-    }).observe(node, {
-      attributes: true,
-      childList: true,
-      characterData: true,
-      subtree: true
-    });
+    if ('MutationObserver' in window) {
+      new MutationObserver(()=> {
+        this.set(this.value);
+      }).observe(node, {
+        attributes: true,
+        childList: true,
+        characterData: true,
+        subtree: true
+      });
+    }
   }
 
   set(value) {
