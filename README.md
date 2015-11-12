@@ -6,7 +6,7 @@ Linked HTML is a library for creating dynamic user interfaces from static html c
 * **Safe and simple syntax:** Links between html and data model are marked only by custom attributes. This ensures no conflict with template engines syntax.
 * **Data binding**: Library uses one-way data binding with flexible control over primitive values, arrays and objects.
 * **Superfast rendering**: Initial state is pre-rendered - bootstrapping library usually takes no DOM changes. Mutated state re-use existing html nodes as much as possible.
-* **Small and simple API**: The architecture covers only three simple concepts. Size of the library is only 36KB / 9KB (gzip).
+* **Small and simple API**: The architecture covers only three simple concepts.
 
 ## Documentation
 The latest documentation is available at project [Wiki](https://github.com/smalluban/linked-html/wiki).
