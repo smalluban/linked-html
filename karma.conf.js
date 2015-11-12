@@ -13,8 +13,7 @@ module.exports = function(config) {
     webpack: {
       module: {
         loaders: [
-          { test: /\.js$/, loader: 'babel' },
-          { test: /\.html$/, loader: 'html' }
+          { test: /\.js$/, loader: 'babel?presets[]=es2015' }
         ]
       },
       devtool: "#inline-source-map"

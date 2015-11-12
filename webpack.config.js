@@ -10,7 +10,7 @@ module.exports = {
   },
   module: {
     loaders: [
-      { test: /\.js$/, loader: 'babel' }
+      { test: /\.js$/, loader: 'babel?presets[]=es2015' }
     ]
   },
   plugins: [
