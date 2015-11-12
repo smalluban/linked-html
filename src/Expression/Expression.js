@@ -41,10 +41,11 @@ export default class Expression {
     }
 
     if (filter) {
-      if (!engine._filters[filter]) {
+      const filters = Engine.config(engine).filters;
+      if (!filters[filter]) {
         throw new ReferenceError(`Filter '${filter}' not found.`);
       }
-      Object.assign(this.filter, engine._filters[filter]);
+      Object.assign(this.filter, filters[filter]);
     }
 
     flags.forEach(f => Flags[f](this, engine));

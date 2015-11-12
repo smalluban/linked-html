@@ -6,13 +6,16 @@ describe('Expression', ()=> {
 
   beforeEach(()=> {
     filter = { get: v => v, set: v => v };
-    engine = { state: {}, _live: true, _filters: { filter } };
+    engine = new Engine(document.createElement('div'));
+    Engine.config(engine).filters.filter = filter;
+
     spyGet = spyOn(filter, 'get').and.callThrough();
     spySet = spyOn(filter, 'set').and.callThrough();
   });
 
   describe('filter', ()=> {
     beforeEach(()=> {
+
       expr = new Expression(engine, 'test|filter');
     });
 
