@@ -80,8 +80,12 @@ export default class Engine {
   }
 
   constructor(node, {state, markers, filters, prefix, live} = {}) {
+    if (!node) {
+      throw new TypeError('Invalid first argument.');
+    }
+
     if (state && Object(state) !== state) {
-      throw TypeError(`Invalid 'state' option, object required.`);
+      throw new TypeError(`Invalid 'state' option, object required.`);
     }
 
     const config = Object.defineProperties(Engine.config(this), {
@@ -94,17 +98,12 @@ export default class Engine {
     Object.defineProperty(this, 'root', { value: this });
     this.state = state || {};
 
-    switch(node.nodeType) {
-      case Node.ELEMENT_NODE:
-        compile(node, this, config.prefix, config.markers);
-        break;
-      case Node.DOCUMENT_FRAGMENT_NODE:
-        Array.from(node.children).forEach(
-          node => compile(node, this, config.prefix, config.markers)
-        );
-        break;
-      default:
-        throw new TypeError('Element or DocumentFragment required.');
+    if(node.nodeType === Node.ELEMENT_NODE) {
+      compile(node, this, config.prefix, config.markers);
+    } else {
+      Array.from(node.children || node).forEach(
+        n => compile(n, this, config.prefix, config.markers)
+      );
     }
   }
 

@@ -20,6 +20,17 @@ describe('Engine instance', ()=> {
     expect(marker.calls.count()).toEqual(2);
   });
 
+  it('use array as node root', ()=> {
+    const nodes = [el.children[0].children[0]];
+    new Engine(nodes, { markers: { marker } });
+    expect(marker.calls.count()).toEqual(1);
+  });
+
+  it('use array like object as node root', ()=> {
+    new Engine(el.children, { markers: { marker } });
+    expect(marker.calls.count()).toEqual(2);
+  });
+
   it('call marker with proper arguments', ()=> {
     const engine = new Engine(el, { markers: { marker } });
 
