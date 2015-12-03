@@ -6,6 +6,7 @@ import Context from './Markers/Context';
 import EventListener from './Markers/EventListener';
 import Foreach from './Markers/Foreach';
 import Property from './Markers/Property';
+import Reference from './Markers/Reference';
 import Text from './Markers/Text';
 
 const Markers = {
@@ -15,6 +16,7 @@ const Markers = {
   on: EventListener,
   foreach: Foreach,
   prop: Property,
+  ref: Reference,
   text: Text
 };
 
