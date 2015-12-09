@@ -22,13 +22,14 @@
   ],
   "homepage": "https://github.com/smalluban/linked-html",
   "dependencies": {
-    "papillon": "^1.5.0"
+    "papillon": "^1.5.2"
   },
   "devDependencies": {
     "babel-core": "^6.1.4",
     "babel-loader": "^6.1.0",
     "babel-preset-es2015": "^6.1.4",
     "core-js": "^1.2.2",
+    "document-register-element": "^0.5.3",
     "jasmine-core": "^2.3.4",
     "karma": "^0.13.3",
     "karma-chrome-launcher": "^0.2.0",

@@ -23,6 +23,6 @@
     "test"
   ],
   "dependencies": {
-    "papillon": "~1.5.0"
+    "papillon": "~1.5.2"
   }
 }

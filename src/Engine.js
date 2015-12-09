@@ -1,4 +1,5 @@
 import { State } from 'papillon/papillon';
+import { register as registerComponent } from './Component';
 
 import Link from './Markers/Link';
 import ClassList from './Markers/ClassList';
@@ -79,6 +80,10 @@ export default class Engine {
     );
 
     return childEngine;
+  }
+
+  static register(name, options) {
+    return registerComponent(this, name, options);
   }
 
   constructor(node, {state, markers, filters, prefix, live} = {}) {
