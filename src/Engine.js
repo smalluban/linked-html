@@ -108,8 +108,12 @@ export default class Engine {
     if(node.nodeType === Node.ELEMENT_NODE) {
       compile(node, this, config.prefix, config.markers);
     } else {
-      Array.from(node.children || node).forEach(
-        n => compile(n, this, config.prefix, config.markers)
+      Array.from(node.childNodes || node).forEach(
+        n => {
+          if (n.nodeType === Node.ELEMENT_NODE) {
+            compile(n, this, config.prefix, config.markers);
+          }
+        }
       );
     }
   }

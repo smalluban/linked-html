@@ -31,6 +31,15 @@ describe('Engine instance', ()=> {
     expect(marker.calls.count()).toEqual(2);
   });
 
+  it('use documentFragmentas node root', ()=> {
+    const fragment = document.createDocumentFragment();
+    for (let child of Array.from(el.childNodes)) {
+      fragment.appendChild(child);
+    }
+    new Engine(fragment, { markers: { marker } });
+    expect(marker.calls.count()).toEqual(2);
+  });
+
   it('call marker with proper arguments', ()=> {
     const engine = new Engine(el, { markers: { marker } });
 
