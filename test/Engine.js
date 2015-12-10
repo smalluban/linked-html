@@ -31,7 +31,7 @@ describe('Engine instance', ()=> {
     expect(marker.calls.count()).toEqual(2);
   });
 
-  it('use documentFragmentas node root', ()=> {
+  it('use documentFragment as node root', ()=> {
     const fragment = document.createDocumentFragment();
     for (let child of Array.from(el.childNodes)) {
       fragment.appendChild(child);
