@@ -79,52 +79,50 @@ function compile(constructor, host, options, constrOpts) {
     });
   }
 
-  return new Promise((resolve)=> {
-    window.requestAnimationFrame(()=> {
-      const engine = new constructor(target, constrOpts);
-      Object.defineProperty(engine, 'host', { value: host });
+  return Promise.resolve().then(()=> {
+    const engine = new constructor(target, constrOpts);
+    Object.defineProperty(engine, 'host', { value: host });
 
-      if (!shadow) {
-        host.insertBefore(target, host.childNodes[0]);
-      } else {
-        Object.defineProperty(engine, 'shadow', { value: target });
-      }
+    if (!shadow) {
+      host.insertBefore(target, host.childNodes[0]);
+    } else {
+      Object.defineProperty(engine, 'shadow', { value: target });
+    }
 
-      if (properties) {
-        for (let key in properties) {
-          const { link, attribute, reflect } = properties[key];
-          const expr = new Expression(engine, link);
+    if (properties) {
+      for (let key in properties) {
+        const { link, attribute, reflect } = properties[key];
+        const expr = new Expression(engine, link);
 
-          new PropertyObserver(host, key).observe(
-            ()=> expr.get(),
-            val => expr.set(val)
-          );
+        new PropertyObserver(host, key).observe(
+          ()=> expr.get(),
+          val => expr.set(val)
+        );
 
-          if (attribute) {
-            const attr = attribute !== true ? attribute : camelToDash(key);
-            if (host.hasAttribute(attr)) {
-              expr.set(host.getAttribute(attr));
-            }
-            if (reflect) {
-              expr.observe((val)=> {
-                host.setAttribute(attr, val);
-              });
-            }
+        if (attribute) {
+          const attr = attribute !== true ? attribute : camelToDash(key);
+          if (host.hasAttribute(attr)) {
+            expr.set(host.getAttribute(attr));
+          }
+          if (reflect) {
+            expr.observe((val)=> {
+              host.setAttribute(attr, val);
+            });
           }
         }
       }
+    }
 
-      if (methods) {
-        [].concat(methods).forEach(method => {
-          Object.defineProperty(host, method, {
-            writable: true,
-            value: (...args)=> engine[method](...args)
-          });
+    if (methods) {
+      [].concat(methods).forEach(method => {
+        Object.defineProperty(host, method, {
+          writable: true,
+          value: (...args)=> engine[method](...args)
         });
-      }
+      });
+    }
 
-      resolve(engine);
-    });
+    return engine;
   });
 }
 
