@@ -3,7 +3,7 @@ module.exports = function(config) {
     basePath: '',
     frameworks: ['jasmine'],
     files: [
-      'node_modules/core-js/client/core.js',
+      'node_modules/core-js/client/shim.js',
       'node_modules/document-register-element/build/document-register-element.js', // jshint ignore:line
       { pattern: 'test/**/*.js', watched: false }
     ],
