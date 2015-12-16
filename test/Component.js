@@ -164,8 +164,8 @@ describe('Component register', ()=> {
     register(Engine, 'nt-props', {
       properties: {
         a: 'a',
-        b: {
-          link: 'bb'
+        bB: {
+          link: 'bb',
         },
         c: {
           link: 'c',
@@ -173,12 +173,13 @@ describe('Component register', ()=> {
         },
         d: {
           link: 'd',
+          attribute: 'ee',
           reflect: true
         }
       }
     });
 
-    it('set attribute value to the same state property', (done)=> {
+    it('set state property', (done)=> {
       el.innerHTML = `<nt-props a="test"></nt-props>`;
       expectFn(el.children[0], done, engine => {
         expect(engine.state.a).toEqual('test');
@@ -187,7 +188,25 @@ describe('Component register', ()=> {
       });
     });
 
-    it('use property value to the same state property', (done)=> {
+    it('uses dashed name for attribute', (done)=> {
+      el.innerHTML = `<nt-props b-b="test"></nt-props>`;
+      expectFn(el.children[0], done, engine => {
+        expect(engine.state.bb).toEqual('test');
+        el.children[0].bB = 'other';
+        expect(engine.state.bb).toEqual('other');
+      });
+    });
+
+    it('uses custom attribute name', (done)=> {
+      el.innerHTML = `<nt-props ee="test"></nt-props>`;
+      expectFn(el.children[0], done, engine => {
+        expect(engine.state.d).toEqual('test');
+        el.children[0].d = 'other';
+        expect(engine.state.d).toEqual('other');
+      });
+    });
+
+    it('maps element property with state', (done)=> {
       el.innerHTML = `<nt-props></nt-props>`;
       expectFn(el.children[0], done, engine => {
         el.children[0].a = 'other';
@@ -195,14 +214,7 @@ describe('Component register', ()=> {
       });
     });
 
-    it('set attribute value to different state property', (done)=> {
-      el.innerHTML = `<nt-props b="test"></nt-props>`;
-      expectFn(el.children[0], done, engine => {
-        expect(engine.state.bb).toEqual('test');
-      });
-    });
-
-    it('use only property', (done)=> {
+    it('uses only property', (done)=> {
       el.innerHTML = `<nt-props c="test"></nt-props>`;
       expectFn(el.children[0], done, engine => {
         expect(engine.state.c).not.toEqual('test');
@@ -211,14 +223,14 @@ describe('Component register', ()=> {
       });
     });
 
-    it('reflect property change to attribute', (done)=> {
-      el.innerHTML = `<nt-props d="test"></nt-props>`;
+    it('reflects change to attribute', (done)=> {
+      el.innerHTML = `<nt-props ee="test"></nt-props>`;
       expectFn(el.children[0], ()=> {}, engine => {
         expect(engine.state.d).toEqual('test');
         engine.state.d = 'other';
 
         window.requestAnimationFrame(()=> {
-          expect(engine.host.getAttribute('d')).toEqual('other');
+          expect(engine.host.getAttribute('ee')).toEqual('other');
           done();
         });
       });

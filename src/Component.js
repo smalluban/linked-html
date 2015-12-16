@@ -1,4 +1,3 @@
-import { PropertyObserver } from 'papillon/papillon';
 import Expression from './Expression/Expression';
 
 export const map = new WeakMap();
@@ -16,12 +15,15 @@ export function register(constructor, name, customOptions) {
   }
 
   if(properties) {
-    for (let key in properties) {
+    for (let key of Object.keys(properties)) {
       if (typeof properties[key] === 'string') {
-        properties[key] = { link: options.properties[key], attribute: true };
+        properties[key] = {
+          link: options.properties[key],
+          attribute: camelToDash(key)
+        };
       } else if (Object(properties[key]) === properties[key]) {
         if (properties[key].attribute === undefined) {
-          properties[key].attribute = true;
+          properties[key].attribute = camelToDash(key);
         }
       } else {
         throw new TypeError(`Invalid '${key}' property description.`);
@@ -50,6 +52,16 @@ export function register(constructor, name, customOptions) {
       value: function() {
         map.get(this).then(engine => {
           engine.detached();
+        });
+      }
+    });
+  }
+
+  if (typeof constructor.prototype.attributeChanged === 'function') {
+    Object.defineProperty(prototype, 'attributeChangedCallback', {
+      value: function(attrName, oldVal, newVal) {
+        map.get(this).then(engine => {
+          engine.attributeChanged(attrName, oldVal, newVal);
         });
       }
     });
@@ -98,22 +110,30 @@ function compile(constructor, host, options, constrOpts) {
     }
 
     if (properties) {
-      for (let key in properties) {
+      for (let key of Object.keys(properties)) {
         const { link, attribute, reflect } = properties[key];
         const expr = new Expression(engine, link);
 
-        new PropertyObserver(host, key).observe(
-          val => expr.set(val)
-        );
+        Object.defineProperty(host, key, {
+          get: ()=> expr.get(),
+          set: (val)=> expr.set(val)
+        });
 
         if (attribute) {
-          const attr = attribute !== true ? attribute : camelToDash(key);
-          if (host.hasAttribute(attr)) {
-            expr.set(host.getAttribute(attr));
+          if (host.hasAttribute(attribute)) {
+            expr.set(host.getAttribute(attribute));
           }
           if (reflect) {
             expr.observe((val)=> {
-              host.setAttribute(attr, val);
+              if (val === undefined) {
+                host.removeAttribute(attribute);
+              } else {
+                if (val === true) {
+                  host.setAttribute(attribute, '');
+                } else {
+                  host.setAttribute(attribute, val);
+                }
+              }
             }, true);
           }
         }
