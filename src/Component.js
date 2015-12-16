@@ -4,9 +4,9 @@ import Expression from './Expression/Expression';
 export const map = new WeakMap();
 
 export function register(constructor, name, customOptions) {
-  const contrOpts = Object.assign({}, constructor._options, customOptions);
+  const constrOpts = Object.assign({}, constructor._options, customOptions);
   const options = extractOptions(
-    contrOpts, ['template', 'properties', 'methods', 'shadow', 'prototype']
+    constrOpts, ['template', 'properties', 'methods', 'shadow', 'prototype']
   );
   const prototype = Object.create(options.prototype || HTMLElement.prototype);
   const { template, properties } = options;
@@ -31,7 +31,7 @@ export function register(constructor, name, customOptions) {
 
   Object.defineProperty(prototype, 'createdCallback', {
     value: function() {
-      map.set(this, compile(constructor, this, options, contrOpts));
+      map.set(this, compile(constructor, this, options, constrOpts));
     }
   });
 
@@ -65,14 +65,22 @@ function compile(constructor, host, options, constrOpts) {
 
   if (template) {
     if (template === true) {
-      if (!(host.children[0] && host.children[0].content)) {
+      template = host.children[0];
+      if (!(template && template.localName === 'template')) {
         throw new Error('Template element required.');
       }
-      template = host.children[0].content;
-      host.removeChild(host.children[0]);
-    }
+      host.removeChild(template);
 
-    target.appendChild(document.importNode(template, true));
+      if (template.content) {
+        target.appendChild(template.content);
+      } else {
+        Array.from(template.childNodes).forEach(n => {
+          target.appendChild(n);
+        });
+      }
+    } else {
+      target.appendChild(document.importNode(template, true));
+    }
   } else {
     Array.from(host.childNodes).forEach(n => {
       target.appendChild(n);
@@ -147,7 +155,16 @@ function resolveTemplate(content) {
   if (typeof content === 'string') {
     const template = document.createElement('template');
     template.innerHTML = content;
-    return template.content;
+
+    if (!template.content) {
+      const fragment = document.createDocumentFragment();
+      Array.from(template.childNodes).forEach(n => {
+        fragment.appendChild(n);
+      });
+      return fragment;
+    } else {
+      return template.content;
+    }
   } else {
     return content.content || content;
   }

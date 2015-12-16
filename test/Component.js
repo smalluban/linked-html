@@ -87,22 +87,24 @@ describe('Component register', ()=> {
       });
     });
 
-    it('use template element', (done)=> {
-      register(Engine, 'ts-template', { template: true });
-      el.innerHTML = `
-        <ts-template>
-          <template><div --text="test">My test 1</div></template>
-        </ts-template>
-      `;
+    if (typeof HTMLTemplateElement !== 'undefined') {
+      it('use template element', (done)=> {
+        register(Engine, 'ts-template', { template: true });
+        el.innerHTML = `
+          <ts-template>
+            <template><div --text="test">My test 1</div></template>
+          </ts-template>
+        `;
 
-      expectFn(el.children[0], done, engine => {
-        expect(engine.state).toEqual({
-          test: 'My test 1',
+        expectFn(el.children[0], done, engine => {
+          expect(engine.state).toEqual({
+            test: 'My test 1',
+          });
+          expect(engine.host.innerHTML.trim())
+            .toEqual('<div --text="test">My test 1</div>');
         });
-        expect(engine.host.innerHTML.trim())
-          .toEqual('<div --text="test">My test 1</div>');
       });
-    });
+    }
 
     it('use string content', (done)=> {
       register(Engine, 'ts-string', {
@@ -138,10 +140,13 @@ describe('Component register', ()=> {
     });
   });
 
+
   describe('shadow option', ()=> {
-    it('use shadow DOM if it is supported', (done)=> {
-      const test = document.createElement('div');
-      if (test.attachShadow || test.createShadowRoot) {
+    const test = document.createElement('div');
+    if (test.attachShadow || test.createShadowRoot) {
+      it('use shadow DOM if it is supported', (done)=> {
+
+
         register(Engine, 'nt-shadow', { shadow: true });
 
         el.innerHTML = `<nt-shadow><div --text="test">test</div></nt-shadow>`;
@@ -151,10 +156,8 @@ describe('Component register', ()=> {
           expect(engine.shadow.innerHTML.trim())
             .toEqual('<div --text="test">test</div>');
         });
-      } else {
-        done();
-      }
-    });
+      });
+    }
   });
 
   describe('properties option', ()=> {
