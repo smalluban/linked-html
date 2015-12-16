@@ -95,7 +95,6 @@ function compile(constructor, host, options, constrOpts) {
         const expr = new Expression(engine, link);
 
         new PropertyObserver(host, key).observe(
-          ()=> expr.get(),
           val => expr.set(val)
         );
 
@@ -107,7 +106,7 @@ function compile(constructor, host, options, constrOpts) {
           if (reflect) {
             expr.observe((val)=> {
               host.setAttribute(attr, val);
-            });
+            }, true);
           }
         }
       }

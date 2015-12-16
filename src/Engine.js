@@ -22,8 +22,8 @@ const Markers = {
 };
 
 const Filters = {
-  int: { set: v => parseInt(v, 10), get: String },
-  bool: { set: Boolean, get: String }
+  int: { set: v => parseInt(v, 10) },
+  bool: { set: Boolean }
 };
 
 const watchers = new WeakMap();
